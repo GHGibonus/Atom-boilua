@@ -23,6 +23,10 @@ TOKEN_DESCRIPTION = [
 
 ]
 
+class ParsingError(Exception):
+	def __init__(self):
+		pass
+
 class Parser(object):
 # Grammar from https://www.lua.org/manual/5.3/manual.html#9
 	__slots__ = [
@@ -102,32 +106,31 @@ class Parser(object):
 					return False
 			return True
 		elif self.accept(TokenEnum.KW_FOR):
-			self.expect(TokenEnum.NAME)
-			self.expect(TokenEnum.OP_ASSIGN)
-			if not self.exp():
-				return False
-			self.expect(TokenEnum.COMMA)
-			if not self.exp():
-				return False
-			if self.accept(TokenEnum.COMMA):
+			if self.peek(TokenEnum.OP_ASSIGN, 1):
+				self.expect(TokenEnum.NAME)
+				self.expect(TokenEnum.OP_ASSIGN)
 				if not self.exp():
 					return False
-			self.expect(TokenEnum.KW_DO)
-			if not self.block():
-				return False
-			self.expect(TokenEnum.KW_END)
-			return True
-		elif self.accept(TokenEnum.KW_FOR):
-			if not self.namelist():
-				return False
-			self.expect(TokenEnum.KW_IN)
-			if not self.explist():
-				return False
-			self.expect(TokenEnum.KW_DO)
-			if not self.block():
-				return False
-			self.expect(TokenEnum.KW_END)
-			return True
+				self.expect(TokenEnum.COMMA)
+				if not self.exp():
+					return False
+				if self.accept(TokenEnum.COMMA):
+					if not self.exp():
+						return False
+				self.expect(TokenEnum.KW_DO)
+				if not self.block():
+					return False
+				self.expect(TokenEnum.KW_END)
+				return True
+			elif self.namelist():
+				self.expect(TokenEnum.KW_IN)
+				if not self.explist():
+					return False
+				self.expect(TokenEnum.KW_DO)
+				if not self.block():
+					return False
+				self.expect(TokenEnum.KW_END)
+				return True
 		elif self.accept(TokenEnum.KW_FUNCTION):
 			if not self.funcname():
 				return False
@@ -135,18 +138,16 @@ class Parser(object):
 				return False
 			return True
 		elif self.accept(TokenEnum.KW_LOCAL):
-			self.expect(TokenEnum.KW_FUNCTION)
-			self.expect(TokenEnum.NAME)
-			if not self.funcbody():
-				return False
-			return True
-		elif self.accept(TokenEnum.KW_LOCAL):
-			if not self.namelist():
-				return False
-			if self.accept(TokenEnum.OP_ASSIGN):
-				if not self.explist():
+			if self.accept(TokenEnum.KW_FUNCTION):
+				self.expect(TokenEnum.NAME)
+				if not self.funcbody():
 					return False
-			return True
+				return True
+			elif self.namelist():
+				if self.accept(TokenEnum.OP_ASSIGN):
+					if not self.explist():
+						return False
+				return True
 		return False
 
 	def retstat(self):
