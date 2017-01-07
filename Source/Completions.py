@@ -23,6 +23,43 @@ TOKEN_DESCRIPTION = [
 
 ]
 
+class Token(object):
+	"""Token objects."""
+	__slots__ = ["type", "line", "column", "value"]
+	def __init__(self, aType, aValue, aLine, aColumn):
+	# aType: TokenEnum
+	# aValue: string
+	# aLine: int
+	# aColumn: int
+		self.type = aType
+		self.line = aLine
+		self.column = aColumn
+		self.value = aValue
+
+	def __str__(self):
+		return """
+===== Token =====
+Type: %s
+Value: '%s'
+Line: %d
+Column: %d
+""" % (
+		TokenDescription[self.type],
+		self.value,
+		self.line,
+		self.column
+	)
+
+class LexicalError(Exception):
+	"""Lexical error."""
+	def __init__(self, aMessage, aLine, aColumn):
+	# aMessage: string
+	# aLine: int
+	# aColumn: int
+		self.message = aMessage
+		self.line = aLine
+		self.column = aColumn
+
 class ParsingError(Exception):
 	def __init__(self):
 		pass
@@ -30,16 +67,73 @@ class ParsingError(Exception):
 class Parser(object):
 # Grammar from https://www.lua.org/manual/5.3/manual.html#9
 	__slots__ = [
-		""
+		"token_regex",
+		"keyword_regex"
 	]
 	def __init__(self):
-		pass
+		token_specifications = [
+		]
+		self.token_regex = re.compile("|".join("(?P<t%s>%s)" % pair for pair in token_specifications))
+		keyword_specifications = [
+		]
+		self.keyword_regex = re.compile("|".join("(?P<t%s>%s)" % pair for pair in keyword_specifications))
 
 	def tokenize(self, a_source_code):
-		pass
+		"""Generates tokens from a string."""
+		assert isinstance(a_source_code, str) #Prune
+	# a_source_code: string (contains source code to tokenize)
+		line = 1
+		column = -1
+		for match in self.token_regex.finditer(a_source_code):
+			type_ = match.lastgroup
+			value_ = match.group(type_)
+			type_ = int(match.lastgroup[1:])
+			if type_ == TokenEnum.WHITESPACE:
+				continue
+			elif type_ == TokenEnum.IDENTIFIER:
+				keyword = self.keyword_regex.match(value_)
+				if keyword:
+					type_ = int(keyword.lastgroup[1:])
+#				yield Token(type_, value_, line, match.start()-column)
+#				continue
+			elif type_ == TokenEnum.COMMENTLINE:
+				yield Token(TokenEnum.COMMENTLINE, None, line, match.start()-column)
+				continue
+			elif type_ == TokenEnum.COMMENTBLOCK:
+				i = value_.count("\n")
+				if i > 0:
+					line += i
+					column = match.end()-1
+#				yield Token(TokenEnum.COMMENTBLOCK, None, line, match.start()-column)
+#				continue
+#			elif type_ == TokenEnum.MULTILINE:
+#				line += 1
+#				column = match.end()-1
+#				continue
+#			elif type_ == TokenEnum.DOCSTRING or type_ == TokenEnum.STRING:
+			elif type_ == TokenEnum.STRING:
+#				if type_ == TokenEnum.DOCSTRING:
+				value_ = value_[1:-1]
+				yield Token(type_, value_, line, match.start()-column)
+				i = value_.count("\n")
+				if i > 0:
+					line += i
+					column = match.end()-1
+				continue
+			elif type_ == TokenEnum.NEWLINE:
+				line += 1
+				column = match.end()-1
+			elif type_ == TokenEnum.UNMATCHED:
+				raise LexicalError("Encountered an unexpected character ('%s')." % value_, line, match.start()-column)
+			yield Token(type_, value_, line, match.start()-column)
+#			if type_ == TokenEnum.NEWLINE:
+#				line += 1
+#				column = match.end()-1
+		yield Token(TokenEnum.EOF, "\n", line, 1)
 
 	def parse(self, a_source_code):
-		pass
+		for token in self.tokenize(a_source_code):
+			print(token)
 
 	def chunk(self):
 		if self.block():
