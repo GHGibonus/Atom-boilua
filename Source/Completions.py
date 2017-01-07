@@ -58,6 +58,7 @@ class Parser(object):
 		elif self.varlist():
 			self.expect(TokenEnum.OP_ASSIGN)
 			if not self.explist():
+				raise ParsingError()
 				return False
 			return True
 		elif self.functioncall():
@@ -71,38 +72,48 @@ class Parser(object):
 			return True
 		elif self.accept(TokenEnum.KW_DO):
 			if not self.block():
+				raise ParsingError()
 				return False
 			self.expect(TokenEnum.KW_END)
 			return True
 		elif self.accept(TokenEnum.KW_WHILE):
 			if not self.exp():
+				raise ParsingError()
 				return False
 			self.expect(TokenEnum.KW_DO)
 			if not self.block():
+				raise ParsingError()
 				return False
 			self.expect(TokenEnum.KW_END)
 			return True
 		elif self.accept(TokenEnum.KW_REPEAT):
 			if not self.block():
+				raise ParsingError()
 				return False
 			self.expect(TokenEnum.KW_UNTIL)
 			if not self.exp():
+				raise ParsingError()
 				return False
 			return True
 		elif self.accept(TokenEnum.KW_IF):
 			if not self.exp():
+				raise ParsingError()
 				return False
 			self.expect(TokenEnum.KW_THEN)
 			if not self.block():
+				raise ParsingError()
 				return False
 			while self.accept(TokenEnum.KW_ELSEIF):
 				if not self.exp():
+					raise ParsingError()
 					return False
 				self.expect(TokenEnum.KW_THEN)
 				if not self.block():
+					raise ParsingError()
 					return False
 			if self.accept(TokenEnum.KW_ELSE):
 				if not self.block():
+					raise ParsingError()
 					return False
 			return True
 		elif self.accept(TokenEnum.KW_FOR):
@@ -110,42 +121,52 @@ class Parser(object):
 				self.expect(TokenEnum.NAME)
 				self.expect(TokenEnum.OP_ASSIGN)
 				if not self.exp():
+					raise ParsingError()
 					return False
 				self.expect(TokenEnum.COMMA)
 				if not self.exp():
+					raise ParsingError()
 					return False
 				if self.accept(TokenEnum.COMMA):
 					if not self.exp():
+						raise ParsingError()
 						return False
 				self.expect(TokenEnum.KW_DO)
 				if not self.block():
+					raise ParsingError()
 					return False
 				self.expect(TokenEnum.KW_END)
 				return True
 			elif self.namelist():
 				self.expect(TokenEnum.KW_IN)
 				if not self.explist():
+					raise ParsingError()
 					return False
 				self.expect(TokenEnum.KW_DO)
 				if not self.block():
+					raise ParsingError()
 					return False
 				self.expect(TokenEnum.KW_END)
 				return True
 		elif self.accept(TokenEnum.KW_FUNCTION):
 			if not self.funcname():
+				raise ParsingError()
 				return False
 			if not self.funcbody():
+				raise ParsingError()
 				return False
 			return True
 		elif self.accept(TokenEnum.KW_LOCAL):
 			if self.accept(TokenEnum.KW_FUNCTION):
 				self.expect(TokenEnum.NAME)
 				if not self.funcbody():
+					raise ParsingError()
 					return False
 				return True
 			elif self.namelist():
 				if self.accept(TokenEnum.OP_ASSIGN):
 					if not self.explist():
+						raise ParsingError()
 						return False
 				return True
 		return False
@@ -177,6 +198,7 @@ class Parser(object):
 		if self.var():
 			while self.accept(TokenEnum.COMMA):
 				if not self.var():
+					raise ParsingError()
 					return False
 			return True
 		return False
@@ -187,6 +209,7 @@ class Parser(object):
 		elif self.prefixexp():
 			if self.accept(TokenEnum.LEFT_BRACKET):
 				if not self.exp():
+					raise ParsingError()
 					return False
 				self.expect(TokenEnum.RIGHT_BRACKET)
 				return True
@@ -207,6 +230,7 @@ class Parser(object):
 		if self.exp():
 			while self.accept(TokenEnum.COMMA):
 				if not self.exp():
+					raise ParsingError()
 					return False
 			return True
 		return False
@@ -230,8 +254,10 @@ class Parser(object):
 			return True	
 		elif self.exp():
 			if not self.binop():
+				raise ParsingError()
 				return False
 			if not self.exp():
+				raise ParsingError()
 				return False
 			return True
 		elif self.unop():
@@ -245,6 +271,7 @@ class Parser(object):
 			return True
 		elif self.accept(TokenEnum.LEFT_PARENTHESIS):
 			if not self.exp():
+				raise ParsingError()
 				return False
 			self.expect(TokenEnum.RIGHT_PARENTHESIS)
 			return True
@@ -255,6 +282,7 @@ class Parser(object):
 			if self.accept(TokenEnum.COLON):
 				self.expect(TokenEnum.NAME)
 				if not self.args():
+					raise ParsingError()
 					return False
 				return True
 			elif self.args():
@@ -276,6 +304,7 @@ class Parser(object):
 	def functiondef(self):
 		if self.accept(TokenEnum.KW_FUNCTION):
 			if not self.funcbody():
+				raise ParsingError()
 				return False
 			return True
 		return False
@@ -285,6 +314,7 @@ class Parser(object):
 			self.parlist()
 			self.expect(TokenEnum.RIGHT_PARENTHESIS)
 			if not self.block():
+				raise ParsingError()
 				return False
 			self.expect(TokenEnum.KW_END)
 			return True
@@ -310,6 +340,7 @@ class Parser(object):
 		if self.field():
 			while self.fieldsep():
 				if not self.field():
+					raise ParsingError()
 					return False
 			self.fieldsep()
 			return True
@@ -318,15 +349,18 @@ class Parser(object):
 	def field(self):
 		if self.accept(TokenEnum.LEFT_BRACKET):
 			if not self.exp():
+				raise ParsingError()
 				return False
 			self.expect(TokenEnum.RIGHT_BRACKET):
 			self.expect(TokenEnum.OP_ASSIGN)
 			if not self.exp():
+				raise ParsingError()
 				return False
 			return True
 		elif self.accept(TokenEnum.NAME):
 			self.expect(TokenEnum.OP_ASSIGN)
 			if not self.exp():
+				raise ParsingError()
 				return False
 			return True
 		elif self.exp():
