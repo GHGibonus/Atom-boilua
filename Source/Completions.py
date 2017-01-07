@@ -17,10 +17,130 @@ KEY_TYPE = "Type"
 KEY_INHERITS_FROM = "Inherits from"
 
 class TokenEnum(object):
-	pass
+	COLON = 1
+	COMMA = 2
+	DOT = 3
+	DOUBLE_COLON = 4
+	KW_AND = 5
+	KW_BREAK = 6
+	KW_DO = 7
+	KW_ELSE = 8
+	KW_ELSEIF = 9
+	KW_END = 10
+	KW_FALSE = 11
+	KW_FOR = 12
+	KW_FUNCTION = 13
+	KW_GOTO = 14
+	KW_IF = 15
+	KW_IN = 16
+	KW_LOCAL = 17
+	KW_NIL = 18
+	KW_NOT = 19
+	KW_OR = 20
+	KW_REPEAT = 21
+	KW_RETURN = 22
+	KW_THEN = 23
+	KW_TRUE = 24
+	KW_UNTIL = 25
+	KW_WHILE = 26
+	LEFT_BRACKET = 27
+	LEFT_CURLY_BRACE = 28
+	LEFT_PARENTHESIS = 29
+	NAME = 30
+	NUMBER = 31
+	OP_ADD = 32
+	OP_ASSIGN = 33
+	OP_BIT_AND = 34
+	OP_BIT_LSHIFT = 35
+	OP_BIT_NOT_XOR = 36
+	OP_BIT_OR = 37
+	OP_BIT_RSHIFT = 38
+	OP_CONCAT = 39
+	OP_DIV = 40
+	OP_EQUAL = 41
+	OP_GREATER = 42
+	OP_GREATER_THAN_OR_EQUAL = 43
+	OP_IDIV = 44
+	OP_LEN = 45
+	OP_LESS = 46
+	OP_LESS_THAN_OR_EQUAL = 47
+	OP_MOD = 48
+	OP_MUL = 49
+	OP_NOT_EQUAL = 50
+	OP_POW = 51
+	OP_SUB = 52
+	RIGHT_BRACKET = 53
+	RIGHT_CURLY_BRACE = 54
+	RIGHT_PARENTHESIS = 55
+	SEMICOLON = 56
+	STRING = 57
+	TRIPLE_DOT = 58
+	NEWLINE = 59
+	UNMATCHED = 60
+	EOF = 61
 
 TOKEN_DESCRIPTION = [
-
+	"COLON",
+	"COMMA",
+	"DOT",
+	"DOUBLE_COLON",
+	"KW_AND",
+	"KW_BREAK",
+	"KW_DO",
+	"KW_ELSE",
+	"KW_ELSEIF",
+	"KW_END",
+	"KW_FALSE",
+	"KW_FOR",
+	"KW_FUNCTION",
+	"KW_GOTO",
+	"KW_IF",
+	"KW_IN",
+	"KW_LOCAL",
+	"KW_NIL",
+	"KW_NOT",
+	"KW_OR",
+	"KW_REPEAT",
+	"KW_RETURN",
+	"KW_THEN",
+	"KW_TRUE",
+	"KW_UNTIL",
+	"KW_WHILE",
+	"LEFT_BRACKET",
+	"LEFT_CURLY_BRACE",
+	"LEFT_PARENTHESIS",
+	"NAME",
+	"NUMBER",
+	"OP_ADD",
+	"OP_ASSIGN",
+	"OP_BIT_AND",
+	"OP_BIT_LSHIFT",
+	"OP_BIT_NOT_XOR",
+	"OP_BIT_OR",
+	"OP_BIT_RSHIFT",
+	"OP_CONCAT",
+	"OP_DIV",
+	"OP_EQUAL",
+	"OP_GREATER",
+	"OP_GREATER_THAN_OR_EQUAL",
+	"OP_IDIV",
+	"OP_LEN",
+	"OP_LESS",
+	"OP_LESS_THAN_OR_EQUAL",
+	"OP_MOD",
+	"OP_MUL",
+	"OP_NOT_EQUAL",
+	"OP_POW",
+	"OP_SUB",
+	"RIGHT_BRACKET",
+	"RIGHT_CURLY_BRACE",
+	"RIGHT_PARENTHESIS",
+	"SEMICOLON",
+	"STRING",
+	"TRIPLE_DOT",
+	"NEWLINE",
+	"UNMATCHED",
+	"EOF"
 ]
 
 class Token(object):
@@ -72,9 +192,70 @@ class Parser(object):
 	]
 	def __init__(self):
 		token_specifications = [
+			(TokenEnum.NUMBER, r"0[xX][0-9a-fA-F]+[pP][+-]?[0-9]+|0[xX]\.[0-9a-fA-F]+(?:[pP][+-]?[0-9]+)?|0[xX][0-9a-fA-F]+(?:\.[0-9a-fA-F]*(?:[pP][+-]?[0-9]+)?)?|[0-9]+(?:[eE][+-]?[0-9]+)|\.[0-9]+(?:[eE][+-]?[0-9]+)?|[0-9]+(?:\.[0-9]*(?:[eE][+-]?[0-9]+)?)?"),
+			(TokenEnum.LINE_COMMENT, r"\-\-[^\n\r]*"),
+			(TokenEnum.DOUBLE_COLON, r"::"),
+			(TokenEnum.COLON, r":"),
+			(TokenEnum.COMMA, r","),
+			(TokenEnum.LEFT_BRACKET, r"\["),
+			(TokenEnum.LEFT_CURLY_BRACE, r"\{"),
+			(TokenEnum.LEFT_PARENTHESIS, r"\("),
+			(TokenEnum.RIGHT_BRACKET, r"\]"),
+			(TokenEnum.RIGHT_CURLY_BRACE, r"\}"),
+			(TokenEnum.RIGHT_PARENTHESIS, r"\)"),
+			(TokenEnum.NAME, r"[_a-zA-Z][_a-zA-Z0-9]*"),
+			(TokenEnum.OP_ADD, r"\+"),
+			(TokenEnum.OP_BIT_AND, r"&"),
+			(TokenEnum.OP_BIT_LSHIFT, r"<<"),
+			(TokenEnum.OP_BIT_NOT_XOR, r"~"),
+			(TokenEnum.OP_BIT_OR, r"|"),
+			(TokenEnum.OP_BIT_RSHIFT, r">>"),
+			(TokenEnum.OP_EQUAL, r"=="),
+			(TokenEnum.OP_ASSIGN, r"="),
+			(TokenEnum.OP_GREATER_THAN_OR_EQUAL, r">="),
+			(TokenEnum.OP_GREATER, r">"),
+			(TokenEnum.OP_IDIV, r"//"),
+			(TokenEnum.OP_DIV, r"/"),
+			(TokenEnum.OP_LEN, r"#"),
+			(TokenEnum.OP_LESS_THAN_OR_EQUAL, r"<="),
+			(TokenEnum.OP_LESS, r"<"),
+			(TokenEnum.OP_MOD, r"\%"),
+			(TokenEnum.OP_MUL, r"\*"),
+			(TokenEnum.OP_NOT_EQUAL, r"~="),
+			(TokenEnum.OP_POW, r"\^"),
+			(TokenEnum.OP_SUB, r"\-"),
+			(TokenEnum.SEMICOLON, r";"),
+			(TokenEnum.STRING, r"\"([^\"]*)\"|\'[^\'']*\'"),
+			(TokenEnum.TRIPLE_DOT, r"\.\.\."),
+			(TokenEnum.OP_CONCAT, r"\.\."),
+			(TokenEnum.DOT, r"\."),
+			(TokenEnum.NEWLINE, r"[\n\r]"),
+			(TokenEnum.UNMATCHED, r"."),
 		]
 		self.token_regex = re.compile("|".join("(?P<t%s>%s)" % pair for pair in token_specifications))
 		keyword_specifications = [
+			(TokenEnum.KW_AND, r"and"),
+			(TokenEnum.KW_BREAK, r"break"),
+			(TokenEnum.KW_DO, r"do"),
+			(TokenEnum.KW_ELSE, r"else"),
+			(TokenEnum.KW_ELSEIF, r"elseif"),
+			(TokenEnum.KW_END, r"end"),
+			(TokenEnum.KW_FALSE, r"false"),
+			(TokenEnum.KW_FOR, r"for"),
+			(TokenEnum.KW_FUNCTION, r"function"),
+			(TokenEnum.KW_GOTO, r"goto"),
+			(TokenEnum.KW_IF, r"if"),
+			(TokenEnum.KW_IN, r"in"),
+			(TokenEnum.KW_LOCAL, r"local"),
+			(TokenEnum.KW_NIL, r"nil"),
+			(TokenEnum.KW_NOT, r"not"),
+			(TokenEnum.KW_OR, r"or"),
+			(TokenEnum.KW_REPEAT, r"repeat"),
+			(TokenEnum.KW_RETURN, r"return"),
+			(TokenEnum.KW_THEN, r"then"),
+			(TokenEnum.KW_TRUE, r"true"),
+			(TokenEnum.KW_UNTIL, r"until"),
+			(TokenEnum.KW_WHILE, r"while"),
 		]
 		self.keyword_regex = re.compile("|".join("(?P<t%s>%s)" % pair for pair in keyword_specifications))
 
@@ -96,9 +277,9 @@ class Parser(object):
 					type_ = int(keyword.lastgroup[1:])
 #				yield Token(type_, value_, line, match.start()-column)
 #				continue
-			elif type_ == TokenEnum.COMMENTLINE:
-				yield Token(TokenEnum.COMMENTLINE, None, line, match.start()-column)
-				continue
+#			elif type_ == TokenEnum.LINE_COMMENT:
+#				yield Token(TokenEnum.COMMENTLINE, None, line, match.start()-column)
+#				continue
 			elif type_ == TokenEnum.COMMENTBLOCK:
 				i = value_.count("\n")
 				if i > 0:
@@ -334,7 +515,7 @@ class Parser(object):
 			return True
 		elif self.accept(TokenEnum.KW_FALSE):
 			return True
-		elif self.accept(TokenEnum.TRUE):
+		elif self.accept(TokenEnum.KW_TRUE):
 			return True
 		elif self.accept(TokenEnum.NUMBER):
 			return True
@@ -520,6 +701,6 @@ class Parser(object):
 			return True
 		elif self.accept(TokenEnum.OP_LEN):
 			return True
-		elif self.accept(TokenEnum.OP_BIT_NOT):
+		elif self.accept(TokenEnum.OP_BIT_NOT_XOR):
 			return True
 		return False
