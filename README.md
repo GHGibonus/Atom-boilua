@@ -13,8 +13,6 @@ Atom-boilua is a package for the text editor [Atom](https://atom.io/) enabling a
 
 The core documentation scraping functionality is based on Kapiainen's Sublime plug-in [The Subliming of Isaac](https://github.com/Kapiainen/The-Subliming-Of-Isaac).
 
-![Example](Resources/documentation-browsing.png)
-
 ## **Configuration**
 This package requires the Atom-lua-autocomplete package to work properly, it uses its handy .luarc config file to interface cleanly with the autocomplete-plus suggestion provider.
 
