@@ -1,4 +1,4 @@
-**The Subliming of Isaac**
+**Atom-boilua**
 ==
 
 An Atom package to improve your Binding of Isaac modding experience.
