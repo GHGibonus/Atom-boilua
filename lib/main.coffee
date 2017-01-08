@@ -1,38 +1,60 @@
 {CompositeDisposable, BufferedProcess} = require 'atom'
 path = require 'path'
-os = require 'os' # os.platform()
+os = require 'os' # os.platform(), os.homedir()
+fs = require 'fs' #fs.stat()
 
 MOD_PATH = null
+BOI_PATH = "steamapps/common/The Binding of Isaac Rebirth"
 if os.platform() == "win32"
-  MOD_PATH = "Documents\\My Games\\Binding of Isaac Afterbirth+ Mods"
+  MOD_PATH = "Documents/My Games/Binding of Isaac Afterbirth+ Mods"
+  BOI_PATH = path.join("Program Files/steam", BOI_PATH)
 else if os.platform() == "darwin"
   MOD_PATH = "Library/Application Support/Binding of Isaac Afterbirth+ Mods"
+  BOI_PATH = path.join(os.homedir(), "Library/Application Support/Steam",
+                       BOI_PATH)
 else if os.platform() == "linux"
   MOD_PATH = ".local/share/binding of isaac afterbirth+ mods"
+  BOI_PATH = path.join(os.homedir(), ".local/share/Steam", BOI_PATH)
 
 MOD_PATH = path.join(os.homedir(), MOD_PATH)
 
-#verify if doc is newer than .luarc
+#verify if doc is newer than .luacompleterc
 verify_docupdate = (docDir, modDir) ->
   console.log "Verifiy Update"
-  provider = new BufferedProcess
-    command: 'python3'
-    args: [path.join(__dirname, 'updateChecker.py'),
-           docDir, path.join(modDir, '.luacompleterc')]
-    stderr: (data) ->
-      console.log data
-      null
+  if not fs.existsSync(docDir)
+    throw console.error
+  docDate = fs.statSync(docDir)['mtime']
+
+  completercPath = path.join(modDir, '.luacompleterc')
+  if not fs.existsSync(completercPath) #if file does not exist, returns directly
+    return true
+  else
+    completercDate= fs.statSync(completercPath)['mtime']
+    return docDate.getTime() > completercDate.getTime()
 
 
-rebuild = (docDirectory, modDir) ->
+rebuild = (docDir, modDir) ->
   console.log "Rebuild"
   provider = new BufferedProcess
-    command: 'python3'
-    args: [path.join(__dirname, 'scraper.py'),
-           docDir, path.join(modDir, '.luacompleterc')]
-    stderr: (data) ->
+    command: 'python3' #Launches the python doc scraper
+    args: [
+      path.join(
+        atom.packages.resolvePackagePath('atom-boilua')
+        'lib/scraper.py')
+      docDir,
+      path.join(modDir, '.luacompleterc')
+    ]
+    stdout: (data) ->
       console.log data
       null
+  provider.onWillThrowError (error, __) ->
+    throw error
+  provider.process?.stdin.on 'error', (err) ->
+    log.debug 'stdin', err
+
+#returns the path to the doc file
+docPath = ->
+  path.join(atom.config.get('atom-boilua.isaacPath'), 'tools/LuaDocs')
 
 
 module.exports =
@@ -55,7 +77,7 @@ module.exports =
       \n
       The proper path is the location of the isaac executable (the folder
       that Steam calls "Local Files")'''
-      default: ''
+      default: BOI_PATH
       type: 'string'
   #members
   subscriptions: null
@@ -70,16 +92,15 @@ module.exports =
 
   force_rebuild: ->
     console.log "Force rebuild"
-    doc_path = atom.config.get('isaacPath')
-    doc_path = path.join(doc_path, 'tools/LuaDocs')
-    rebuild(doc_path, atom.config.get('modPath'))
+    rebuild(docPath(), atom.config.get('atom-boilua.modPath'))
+    null
 
   #verify if we are in the modding directory
   verify_path: (editor) ->
     cur_path = editor.getPath()
     cur_path = path.resolve(cur_path)
-    console.log cur_path + ":" + atom.config.get('atom-boilua.modPath')
-    if cur_path.startsWith(atom.config.get('atom-boilua.modPath'))
-      if verify_docupdate()
-        rebuild()
+    modPath = atom.config.get('atom-boilua.modPath')
+    console.log "verify Path"
+    if cur_path.startsWith(modPath) and verify_docupdate(docPath(), modPath)
+      rebuild(docPath(), modPath)
     null

@@ -1,10 +1,10 @@
 #!/bin/usr/python3
-#pylint: disable=C0301
+#pylint: disable=C0301,C0103
 """Scraps data from the isaac API doc and copies it in the target file.
 
-	The module must be called directly, the arguments are as following:
-	1. the doc directory
-	2. the luacompleterc output file."""
+    The module must be called directly, the arguments are as following:
+    1. the doc directory
+    2. the luacompleterc output file."""
 
 import re
 import os
@@ -39,7 +39,13 @@ KEY_PARAMETERS = "Parameters"
 KEY_RETURNS = "Returns"
 KEY_TYPE = "Type"
 KEY_INHERITS_FROM = "Inherits from"
+# From that point onward, you get clean documented code
+
+def scrapAll(docPath: str):
+    """Scraps the Afterbirth+ API into digestible information."""
+    pass
 
 if __name__ == '__main__':
-
-	main()
+    docPath = sys.argv[1]
+    completercPath = sys.argv[2]
+    scrapAll(docPath)
