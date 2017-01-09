@@ -11,6 +11,8 @@
   "engines": {
     "atom": ">=1.0.0"
   },
-  "dependencies": {
-  }
+  "package-deps": [
+    "autocomplete-lua",
+    "language-lua"
+  ]
 }

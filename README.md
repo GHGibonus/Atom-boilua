@@ -20,8 +20,8 @@ The core documentation scraping functionality (specifically the regex paterns) i
 ## **Installation**
 
 ### **Requirements**
-- A Python3 interpreter avaliable on system.
-- The atom-lua-autocomplete Atom package.
+- A Python3 interpreter avaliable on the system.
+- The autocomplete-lua and language-lua packages.
 - The game that this package is supposed to help you mod!
 - The [Atom editor](https://atom.io/)
 
@@ -38,18 +38,21 @@ Congratulation, it is now setup correctly!
 You can also search for `atom-boilua` in the install tab and install it through the UI.
 
 ### **Configuration**
-Please look into the package's settings to configure your installation.
+Please look into the package's settings to configure your installation. If you are under Windows, you probably need to set the Python path. If you use a custom location for your Steam folder, you surely need to update the Isaac path. If you would like to use a different directory than the default one to develop your Afterbirth mods, you need to change the `isaac mod` path.
 
 
 ## **Inner Workings**
-The package creates a .luacompleterc file in your `binding of isaac afterbirth+ mod` folder, which the atom-lua-autocomplete package will use to provide you with proper mod API suggestions.
+The package creates a .luacompleterc file in your `binding of isaac afterbirth+ mod` folder, which the autocomplete-lua package will use to provide you with proper mod API suggestions.
 
-To create the .luacompleterc file, atom-boilua first checks in your Steam BoI:Rebirth file if the lua api doc is more recent than the .luacompleterc file in your `binding of isaac afterbirth+ mod` folder when you open a file in the modding folder. If it is the case, it will update your .luacompleterc, otherwise it does nothing.
+When you open a file in the isaac mod folder, atom-boilua will check if it needs to create or update a .luacompleterc by comparing the last modification time of the API documentation and the .luacompleterc file.
 
+It will then scrap the necessary informations from the doc and convert them into data readable by the autocomplete-lua package.
 
 ## **Improvement leads**
 - The atom-lua-autocomplete package provides an interface to programmatically feed autocompletion suggestion, it would be wise to use it instead of hardcodding a .luacompleterc file.
 - It is definitely possible to port the Python code to coffee/javascript, and remove the Python dependency. I personally cannot do so, given that I do not have any experience with javascript.
+- The package is only tested on Linux, however I'm working to make it work on all platforms, so contribute by submitting your bug report!
+
 
 ## **License**
 See [**LICENSE.md**](LICENSE.md) for more information.
