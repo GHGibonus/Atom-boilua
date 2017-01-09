@@ -25,6 +25,7 @@ All the code has been refactored to adhere to a more readable standard and to im
 - The autocomplete-lua and language-lua packages.
 - The game that this package is supposed to help you mod!
 - The [Atom editor](https://atom.io/)
+
 Aquire all the forementioned software before going to the next section.
 
 ### **Download**
