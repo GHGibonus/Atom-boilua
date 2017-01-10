@@ -1,42 +1,26 @@
 #!/bin/usr/python3
 #pylint: disable=C0103,W0401,R0903,C0321,W0201,W0231,C0111,C0330,C0326
 """This module implements the serialization behavior for the completerc file.
-
 """
 
-#TO EXTRACT:
-# types,
-# enumerators and their
-#oop to lua translation:
-#  class -> table with specific type
-#  class method -> table field of type function
-#  class attribute -> table field of arbitrary type
-
-# first we need to find all 'root' named types, which are:
-# Enumerators
-# Namespaces
-# class names
 import sys
-
-from typing import Dict, List, Union
 
 from scraper import (
     AfterbirthApi, LuaClass, LuaAttribute, LuaType,
-    LuaFunction )
+    LuaFunction, LuaEnumerator, LuaNamespace )
 
-
-def serializedType(luaType: LuaType) -> Dict:
+def serializedType(luaType: LuaType) -> dict:
     if luaType.name in ('boolean', 'integer', 'float', 'string'):
         return {'type': luaType.name}
     else:
         return {'type': 'ref', 'name': luaType.name}
 
-def serializedAttrib(var: LuaAttribute) -> Dict:
+def serializedAttrib(var: LuaAttribute) -> dict:
     ret = serializedType(var.luaType)
     ret.update({'description': var.description})
     return ret
 
-def serializedFunction(fun : LuaFunction) -> Dict:
+def serializedFunction(fun : LuaFunction) -> dict:
     ret = {
         'type': 'function',
         'description': fun.description,
@@ -49,7 +33,7 @@ def serializedFunction(fun : LuaFunction) -> Dict:
         ret['argTypes'].append(serializedType(arg.luaType))
     return ret
 
-def serializedClass(c: LuaClass) -> Dict:
+def serializedClass(c: LuaClass) -> dict:
     ret = {
         'type': 'table',
         'fields': {},
@@ -61,6 +45,26 @@ def serializedClass(c: LuaClass) -> Dict:
         ret['fields'][method.name] = serializedFunction(method)
     return ret
 
+def serializedEnumeration(e: LuaEnumerator) -> dict:
+    ret = {
+        'type': 'table',
+        'fields': {},
+    }
+    for m in e.members:
+        ret['fields'][m.name] = {
+            'type': 'integer',
+            'description': m.description
+        }
+    return ret
+
+def serializedNamespace(ns: LuaNamespace) -> dict:
+    ret = {
+        'type': 'table',
+        'fields': {},
+    }
+    for f in ns.functions:
+        ret['fields'][f.name] = serializedFunction(f)
+    return ret
 
 def constructCompleterc(api: AfterbirthApi):
     globalScope = {
@@ -73,6 +77,16 @@ def constructCompleterc(api: AfterbirthApi):
     for c in api.classes:
         globalScope['namedTypes'][c.name] = serializedClass(c)
         globalScope['global']['fields'][c.name] = serializedClass(c)
+    for e in api.enumerators:
+        globalScope['namedTypes'][e.name] = serializedEnumeration(e)
+        globalScope['global']['fields'][e.name] = serializedEnumeration(e)
+    for ns in api.namespaces:
+        globalScope['namedTypes'][ns.name] = serializedNamespace(ns)
+        globalScope['global']['fields'][ns.name] = serializedNamespace(ns)
+    globalScope['global']['fields']['Game'] = {
+        'type': 'function',
+        'returnTypes': [{'type': 'ref', 'name': 'Game'}]
+    }
     return globalScope
 
 

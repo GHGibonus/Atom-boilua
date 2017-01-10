@@ -15,7 +15,7 @@ Atom-boilua is a package for the text editor [Atom](https://atom.io/) enabling a
 
 The core documentation scraping functionality (specifically the regex paterns) is based on Kapiainen's Sublime plug-in [The Subliming of Isaac](https://github.com/Kapiainen/The-Subliming-Of-Isaac).
 
-All the code has been refactored to adhere to a more readable standard and to improve the life of people who want to contribute or fork this package for other purposes. Note that however it might look completly different, most of the code is stricly identical in logic.
+All the code has been refactored to adhere to a more readable standard and to improve the life of people who want to contribute or fork this package for other purposes. Note that however the two code-bases might look completly different, most of the scraper codes are stricly identical in logic.
 
 
 ## **Installation**
@@ -61,16 +61,15 @@ It will then scrap the necessary informations from the doc and convert them into
 This package uses pylint and MyPy to guarentee quality code and easy maintainability.
 
 ## **Improvement leads**
-- The atom-lua-autocomplete package provides an interface to programmatically feed autocompletion suggestion, it would be wise to use it instead of hardcodding a .luacompleterc file.
 - It is definitely possible to port the Python code to coffee/javascript, and remove the Python dependency. I personally cannot do so, given that I do not have any experience with javascript.
-- The package is only tested on Linux, however I'm working to make it work on all platforms, so contribute by submitting your bug report!
+- The package is only tested on Linux, and Windows, however I'm working to make it work on all platforms, so contribute by submitting your bug report!
 
 ### **Progress**
 `Atom API       [############---] 80%`
 
 `scraper        [#######################] 💯%`
 
-`completerc gen [######---------] 40%` ← Usability milestone
+`completerc gen [###############] 💯%` ← Usability milestone
 
 `Testing        [-------------------] 0%`
 

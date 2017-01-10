@@ -113,6 +113,6 @@ module.exports =
       if cur_path.startsWith(modPath) and verify_docupdate(docPath(), modPath)
         rebuild(docPath(), modPath)
     else
-      console.log "found an undefined path" + cur_path
+      console.log "found an undefined path:" + cur_path
     console.log "verify Path"
     null
