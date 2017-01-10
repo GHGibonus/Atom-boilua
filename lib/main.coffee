@@ -35,8 +35,9 @@ verify_docupdate = (docDir, modDir) ->
 
 rebuild = (docDir, modDir) ->
   console.log "Rebuild"
+  pythonPath = atom.config.get('atom-boilua.pythonPath')
   provider = new BufferedProcess
-    command: 'python3' #Launches the python doc scraper
+    command: pythonPath #Launches the python doc scraper
     args: [
       path.join(
         atom.packages.resolvePackagePath('atom-boilua')
@@ -50,7 +51,7 @@ rebuild = (docDir, modDir) ->
   provider.onWillThrowError (error, __) ->
     throw error
   provider.process?.stdin.on 'error', (err) ->
-    log.debug 'stdin', err
+    console.log 'stdin', err
 
 #returns the path to the doc file
 docPath = ->
@@ -78,6 +79,14 @@ module.exports =
       The proper path is the location of the isaac executable (the folder
       that Steam calls "Local Files")'''
       default: BOI_PATH
+      type: 'string'
+    pythonPath:
+      title: 'Python path'
+      description: '''The path to your Python executable, if you are on
+      Windows, the default value is not enough, please provide it.
+
+      Remember that your Python version must be 3.5 or higher!'''
+      default: 'python3'
       type: 'string'
   #members
   subscriptions: null
