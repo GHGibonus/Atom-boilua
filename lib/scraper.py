@@ -1,5 +1,5 @@
 #!/bin/usr/python3
-#pylint: disable=C0103,W0401,R0903,C0321,C0326,W0201,C0111
+#pylint: disable=C0103,W0401,R0903,C0321,C0326,W0201,C0111,W0231,C0330
 #disabled warnings:
 # C0103: Naming convention. Here, we use:
 #   camelCase for variables, functions and methods.
@@ -10,113 +10,94 @@
 #        relational-oriented OOP based design pattern used in this package
 # C0321: several statements on a line are Ok as long as it is used
 #        sparingly
-# W0201: Defining attributes outside of the __init__ is sadly necessary
+# W0201, W0231: Defining attributes outside of the __init__ is sadly necessary
 #        to implement a overloading-like behavior in constructors.
 # C0111: Class docstrings are unecessary if the class type is simple and
 #        its name is explicit
+# C0330: Incompatible with recommended notation for generators
 
 # Your code must pass pylint and MyPy successfully to be considered for
 # upstream integration
 
 """Scraps data from the isaac API doc and copies it in the target file.
 
-    The module must be called directly, the arguments are as following:
-    1. the doc directory
-    2. the luacompleterc output file."""
+The script takes in argument the path to the Afterbirth API docs."""
 
 import re
 import os
 import os.path as pth
 import sys
-import json
 from typing import (
-    Iterator, Tuple, List, TypeVar, Match,
-    Optional, Union, Dict, NamedTuple, TextIO)
+    Iterator, Tuple, List, Match,
+    Optional, Union, NamedTuple, IO )
+
 from scraper_regexs import *
 
 class InvalidRematcher(Exception):
     """Rose when trying to create an object from an invalid matcher."""
-    def __init__(self, msg: str = 'Couldn\'t construct Class from matcher'):
+    def __init__(self,
+                 msg: str = 'Couldn\'t construct Class from matcher') -> None:
         super().__init__()
         self.message =  msg
 
 class InvalidFunctionRematcher(InvalidRematcher):
-    def __init__(self, msg: str = 'Couldn\'t construct function form line'):
+    def __init__(self,
+                 msg: str = 'Couldn\'t construct function form line') -> None:
         super().__init__()
         self.message =  msg
 
 class InvalidAttributeRematcher(InvalidRematcher):
-    def __init__(self, msg: str = 'Couldn\'t construct attribute form line'):
+    def __init__(self,
+                 msg: str = 'Couldn\'t construct attribute form line') -> None:
         super().__init__()
         self.message =  msg
 
-KapiainenMatchReturnType = TypeVar('KapiainenMatchReturnType', str, Tuple[str])
-
 
 class LuaType:
-    """A simple lua class description."""
-    #name: str
-    #isConst: bool
-    #isStatic: bool
-    def __init__(self,
-        *args: Union[Match, Tuple[str, bool, bool]],
-        **kwargs: Optional[Dict]):
-        """Initializes LuaType.
+    """A simple lua type description.
 
-        Supports two constructor methods:
-        1: LuaType(name: str, isConst: bool= False, isStatic: bool= False)
-        builds the instance with the given arguments
-
-        2: LuaType(reMatcher: Match)
-        builds the instance using the matching object."""
-        if isinstance(args[0], Match):
-            self.__initRegex(args[0])
-        elif 'reMatcher' in kwargs.keys():
-            self.__initRegex(kwargs['reMatcher'])
+    The constructor provides means to interpolate the type from the docs."""
+    name = None #type: str
+    isConst = None #type: bool
+    isStatic = None #type: bool
+    def __init__(self, typeMatcher: Match= None) -> None:
+        if typeMatcher is None:
+            self.__initFlat('nil')
         else:
-            self.__initFlat(*args)
+            self.__initFlat(
+                typeMatcher.group('type'),
+                typeMatcher.group('const') is not None,
+                typeMatcher.group('static') is not None )
 
     def __initFlat(self,
-            name: str, isConst: bool= False, isStatic: bool= False):
+                   name: str='', isConst: bool= False, isStatic: bool= False):
         self.name = name if name != '' else 'nil' # type: str
         self.isConst = isConst # type: bool
         self.isStatic = isStatic # type: bool
 
-    def __initRegex(self, typeMatcher: Match):
-        self.__initFlat(
-            typeMatcher.group('type'),
-            typeMatcher.group('const') is not None,
-            typeMatcher.group('static') is not None)
-
 
 class LuaVariable:
     """A lua variable, inherited by classes describing attributes and other."""
-    #name: str
-    #luaType: LuaType
-    def __init__(self, name: str, luaType: LuaType):
+    name = None #type: str
+    luaType = None #type: LuaType
+    def __init__(self, name: str, luaType: LuaType) -> None:
         self.name = name # type: str
         self.luaType = luaType # type: LuaType
 
+
 class LuaParam(LuaVariable):
     """A parameter of a Lua function."""
-    def __init__(self, name: str, luaType: LuaType):
+    def __init__(self, name: str, luaType: LuaType) -> None:
         super().__init__(name, luaType)
+
 
 class LuaAttribute(LuaVariable):
-    """An attribute of a Lua class."""
+    """An attribute of a Lua class.
+
+    The constructor can interpolate from the doc strings"""
     # super()
-    # comment: str
-    def __init__(self, *args: Union[Tuple[str], Tuple[str, LuaType, str]]):
-        if len(args) == 1:
-            self.__initLine(args[0])
-        else:
-            self.__initFlat(*args)
-
-    def __initFlat(self, name: str, luaType: LuaType, comment: str=''):
-        super().__init__(name, luaType)
-        self.comment = comment # type: str
-
-    def __initLine(self, line: str):
+    comment = None #type: str
+    def __init__(self, line: str) -> None:
         """Initializes the attribute using a reg-exed line."""
         attribScraper = RE_ATTRIBUTE.search(line)
         name  = attribScraper.group('name')
@@ -131,11 +112,11 @@ class LuaAttribute(LuaVariable):
 
 class LuaFunction:
     """A structure to hold information about lua functions."""
-    #name: str
-    #comment: str
-    #parameters: List[LuaParam]
-    #returnType: LuaType
-    def __init__(self, arg: Union[Match, str]):
+    name = None #type: str
+    comment = None #type: str
+    parameters = None #type: List[LuaParam]
+    returnType = None #type: LuaType
+    def __init__(self, arg: Union[Match, str]) -> None:
         if isinstance(arg, Match):
             self.__initMatch(arg)
         elif isinstance(arg, str):
@@ -158,7 +139,7 @@ class LuaFunction:
         self._findReturnval(functionRematcher.group('returns'))
         self.comment = '' # type: str
 
-    def _findParameters(self, paramMatchedVals: KapiainenMatchReturnType):
+    def _findParameters(self, paramMatchedVals: str):
         """Finds the parameters and adds them to instance.
 
         The type for paramMatchedVals is what I could interpolate from the
@@ -170,17 +151,22 @@ class LuaFunction:
         for param in paramScraper:
             paramMatcher = RE_FUNCTION_PARAMETER.search(param)
             paramName = paramMatcher.group('name')
-            paramType = paramMatcher.group('type')
-            self.parameters += [LuaParam(paramName, LuaType(paramType))]
+            self.parameters += [LuaParam(paramName, LuaType(paramMatcher))]
 
-    def _findReturnval(self, retMatchval: KapiainenMatchReturnType):
+    def _findReturnval(self, retMatchval: str):
         """Finds the return value found from that retMatchval thingy."""
         if not retMatchval: #NOTE: not sure what this is for
-            self.returnType = LuaType('') # type: LuaType
+            self.returnType = LuaType() # type: LuaType
         else:
             returnMatcher = RE_FUNCTION_RETURNS.search(
                 RE_HTML_REPLACER.sub('', retMatchval))
             self.returnType = LuaType(returnMatcher) # type: LuaType
+
+    @staticmethod
+    def liveFunctionGen(line: str) -> Optional[LuaFunction]:
+        """Reads lines as a stream and returns a LuaFunction when it knows
+        the function definition has been completed. Otherwise returns None."""
+        pass
 
 
 def _parseDescription(line: str) -> Optional[str]:
@@ -194,12 +180,12 @@ def _parseDescription(line: str) -> Optional[str]:
 
 class LuaClass:
     """Describes a lua class."""
-    #parents: [LuaClass]
-    #name: str
-    #description: str
-    #methods: [LuaFunction]
-    #attributes: [LuaAttribute]
-    def __init__(self, classPath: str):
+    parents = None #type: List[LuaClass]
+    name = None #type: str
+    description = None #type: str
+    methods = None #type: List[LuaFunction]
+    attributes = None #type: List[LuaAttribute]
+    def __init__(self, classPath: str) -> None:
         """Initializes the class based on infos gathered in the class file.
 
         NOTE: the parent cannot be a reference to LuaClass, because those
@@ -240,11 +226,11 @@ class LuaClass:
                 #I'm not sure how to handle that yet...
 
 
-class LuaNamespace: #TODO: reread code, seems like 1 file= multiple namespaces
+class LuaNamespace:
     """Describes a lua namespace."""
-    #name: str
-    #functions: [LuaFunction]
-    def __init__(self, namespacePath: str):
+    name = None #type: str
+    functions = None #type: List[LuaFunction]
+    def __init__(self, namespacePath: str) -> None:
         """Initializes namespace descibed in the file namespacePath."""
         with open(namespacePath, 'r') as namespaceFile:
             content = namespaceFile.read()
@@ -258,34 +244,65 @@ class LuaNamespace: #TODO: reread code, seems like 1 file= multiple namespaces
                     self.functions += [LuaFunction(curLine)]
                 except InvalidFunctionRematcher: pass
                 lineDescr = _parseDescription(curLine)
-                if lineDescr is None:
-                    continue
-                self.functions[-1].comment = lineDescr
-                #It seems in the original code that the description
-                #is associated with a previously found function
-                #I'm not sure how to handle that yet...
+                if lineDescr is not None:
+                    self.functions[-1].comment = lineDescr
 
-class EnumTag(NamedTuple):
-    name = str
-    value = int
-    description = str
+
+EnumTag = NamedTuple('EnumTag', [
+    ('name', str),
+    ('value', int),
+    ('description', str)
+])
+
 
 class LuaEnumerator:
-    #members: [EnumTag]
-    def __init__(self, openFile: TextIO):
-        """Initializes enum descibed in the file enumPath."""
-        pass
+    name = None # type: str
+    members = None # type: List[EnumTag]
+    def __init__(self, name: str, members: List[EnumTag]) -> None:
+        """Initializes the class like a dummy."""
+        self.name = name
+        self.members = members
 
+    @staticmethod
+    def streamInit(openFile: IO) -> Optional[LuaEnumerator]:
+        """Reads the text stream for a lua enumerator.
 
-
+        It will reads the stream untill it completed a LuaEnumerator,
+        it will then return it. Note that the IO pointer will
+        be modified by this function."""
+        curMemberList = [] # type: List[EnumTag]
+        curEnumName = None # type: str
+        oldPointerPosition = openFile.tell()
+        for curLine in openFile:
+            enumNameScraper = RE_ENUM_NAME.search(curLine)
+            if enumNameScraper is not None:
+                if curEnumName is None:
+                    curEnumName = enumNameScraper.group(1)
+                else:
+                    openFile.seek(oldPointerPosition) #unconsumes last line
+                    return LuaEnumerator(curEnumName, curMemberList)
+            else:
+                memberScraper = RE_ENUM_MEMBER.search(curLine)
+                if memberScraper is not None:
+                    curMemberList += [EnumTag(
+                        memberScraper.group('name'),
+                        0,
+                        RE_HTML_REPLACER.sub('',memberScraper.group('desc'))
+                    )]
+            oldPointerPosition = openFile.tell()
+        # reached end of file
+        if curEnumName is not None:
+            return LuaEnumerator(curEnumName, curMemberList)
+        else:
+            return None
 
 
 def allDocFiles(docPath: str) -> Iterator[Tuple[str, str]]:
     """List all files in the docPath.
 
     Returns their file name and associated directory paths"""
-    for __, dirName, dirFileList in os.walk(docPath):
-        for fileName in dirFileList:
+    for fileData in os.walk(docPath):
+        for __, dirName, fileName in fileData:
             yield fileName, dirName
 
 def categorizeFiles(docPath: str) -> Tuple[List[str], List[str], List[str]]:
@@ -293,7 +310,7 @@ def categorizeFiles(docPath: str) -> Tuple[List[str], List[str], List[str]]:
 
     Returns: class-files, namespace-files, enumerator-files"""
     def isClassFile(name: str) -> bool:
-        """Returns True if name matches a class description file False if not"""
+        """Returns True if name matches a class description file."""
         return re.fullmatch(r'class_.*(?!-members)\.html', name) != None
     classFiles = [pth.join(f,d) for f,d in allDocFiles(docPath)
                                 if isClassFile(f)] # type: List[str]
@@ -302,7 +319,27 @@ def categorizeFiles(docPath: str) -> Tuple[List[str], List[str], List[str]]:
     return classFiles, namespaceFiles, enumFiles
 
 
+class AfterbirthApi:
+    """Describes the API as it is presented in the doc files."""
+    classes = [] # type: List[LuaClass]
+    enumerators = [] # type: List[LuaEnumerator]
+    namespaces = [] # type: List[LuaNamespace]
+    def __init__(self, docPath: str) -> None:
+        classFiles, nsFiles, enumFiles = categorizeFiles(docPath)
+        for curFile in classFiles:
+            self.classes += [LuaClass(curFile)]
+        for curFile in nsFiles:
+            self.namespaces += [LuaNamespace(curFile)]
+        for curFile in enumFiles:
+            with open(curFile, 'r') as enumStream:
+                while True: #do while, breaks when reached end of stream
+                    curEnum = LuaEnumerator.streamInit(enumStream)
+                    if curEnum is None:
+                        break
+                    self.enumerators += [curEnum]
+
+
 if __name__ == '__main__':
     argDocPath = sys.argv[1]
-    argCompletercPath = sys.argv[2]
-    scrapAll(argDocPath)
+    abpApi = AfterbirthApi(argDocPath)
+    print(abpApi)

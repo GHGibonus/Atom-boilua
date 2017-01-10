@@ -1,3 +1,4 @@
 .gitattributes
 .gitignore
-.tags[1]
+*.tags*
+*__pycache__
