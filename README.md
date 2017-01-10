@@ -15,7 +15,7 @@ Atom-boilua is a package for the text editor [Atom](https://atom.io/) enabling a
 
 The core documentation scraping functionality (specifically the regex paterns) is based on Kapiainen's Sublime plug-in [The Subliming of Isaac](https://github.com/Kapiainen/The-Subliming-Of-Isaac).
 
-All the code has been refactored to adhere to a more readable standard and to improve the life of people who want to contribute or fork this package for other purposes.
+All the code has been refactored to adhere to a more readable standard and to improve the life of people who want to contribute or fork this package for other purposes. Note that however it might look completly different, most of the code is stricly identical in logic.
 
 
 ## **Installation**
@@ -49,7 +49,7 @@ Here is what you can find in the settings tab:
 | ---------------------------- | ----------------------------------- |
 | Isaac AB+ mod editing folder | The directory in which you edit your mods, by default, it is the Afterbirth+ mod folder. |
 | Isaac Game folder            | The directory in which Rebirth is installed, if you use a custom Steam location, this must be changed.
-| Python path                  | The Python executable path, Windows users must specificy it |
+| Python path                  | The Python executable path, Windows users must specify it |
 
 ## **Inner Workings**
 The package creates a .luacompleterc file in your `binding of isaac afterbirth+ mod` folder, which the autocomplete-lua package will use to provide you with proper mod API suggestions.
@@ -68,9 +68,9 @@ This package uses pylint and MyPy to guarentee quality code and easy maintainabi
 ### **Progress**
 `Atom API       [############---] 80%`
 
-`scraper        [#######################] 100%`
+`scraper        [#######################] 💯%`
 
-`completerc gen [---------------] 0%` ← Usability milestone
+`completerc gen [######---------] 40%` ← Usability milestone
 
 `Testing        [-------------------] 0%`
 

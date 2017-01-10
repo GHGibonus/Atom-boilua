@@ -26,7 +26,7 @@ verify_docupdate = (docDir, modDir) ->
   docDate = fs.statSync(docDir)['mtime']
 
   completercPath = path.join(modDir, '.luacompleterc')
-  if not fs.existsSync(completercPath) #if file does not exist, returns directly
+  if not fs.existsSync(completercPath) #if file does not exist, returns
     return true
   else
     completercDate= fs.statSync(completercPath)['mtime']
@@ -41,7 +41,7 @@ rebuild = (docDir, modDir) ->
     args: [
       path.join(
         atom.packages.resolvePackagePath('atom-boilua')
-        'lib/scraper.py')
+        'lib/main.py')
       docDir,
       path.join(modDir, '.luacompleterc')
     ]
@@ -107,9 +107,12 @@ module.exports =
   #verify if we are in the modding directory
   verify_path: (editor) ->
     cur_path = editor.getPath()
-    cur_path = path.resolve(cur_path)
-    modPath = atom.config.get('atom-boilua.modPath')
+    if not cur_path is undefined
+      cur_path = path.resolve(cur_path)
+      modPath = atom.config.get('atom-boilua.modPath')
+      if cur_path.startsWith(modPath) and verify_docupdate(docPath(), modPath)
+        rebuild(docPath(), modPath)
+    else
+      console.log "found an undefined path" + cur_path
     console.log "verify Path"
-    if cur_path.startsWith(modPath) and verify_docupdate(docPath(), modPath)
-      rebuild(docPath(), modPath)
     null
