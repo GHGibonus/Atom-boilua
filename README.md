@@ -68,7 +68,7 @@ This package uses pylint and MyPy to guarentee quality code and easy maintainabi
 ### **Progress**
 `Atom API       [############---] 80%`
 
-`scraper        [#############----------] 50%`
+`scraper        [#######################] 100%`
 
 `completerc gen [---------------] 0%` ← Usability milestone
 
