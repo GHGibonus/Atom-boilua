@@ -29,13 +29,7 @@ All the code has been refactored to adhere to a more readable standard and to im
 Aquire all the forementioned software before going to the next section.
 
 ### **Download**
-(currently, this package is under developpement, this will become trivial when the package is released)
 
-**Pre release:**
-Open your Atom package folder in a terminal and type `git clone https://github.com/GHGibonus/Atom-boilua.git`
-Congratulation, it is now setup correctly!
-
-**post release:**
 `apm install atom-boilua` et voila!
 
 You can also search for `atom-boilua` in the install tab and install it through the UI.
@@ -65,13 +59,13 @@ This package uses pylint and MyPy to guarentee quality code and easy maintainabi
 - The package is only tested on Linux, and Windows, however I'm working to make it work on all platforms, so contribute by submitting your bug report!
 
 ### **Progress**
-`Atom API       [############---] 80%`
+`Atom API       [###############] 💯%`
 
 `scraper        [#######################] 💯%`
 
 `completerc gen [###############] 💯%` ← Usability milestone
 
-`Testing        [-------------------] 0%`
+`Testing        [#####--------------] 25%`
 
 `Time wasted making pretty ascii arts [##########] too much%`
 

@@ -19,6 +19,12 @@
 # Your code must pass pylint and MyPy successfully to be considered for
 # upstream integration (ok, you can get away with three warnings)
 
+"""Scraps the doc and creates the completerc file.
+
+Takes as argument:
+    1: The Afterbirth lua documentation path,
+    2: The .luacompleterc file location, to write the scrapped doc into."""
+
 import sys
 
 import json
@@ -26,8 +32,7 @@ import json
 from scraper import AfterbirthApi
 from serializer import constructCompleterc
 
-
-def scrapAndSerialize(docPath, completercFile):
+def scrapAndSerialize(docPath: str, completercFile: str):
     api = AfterbirthApi(docPath)
     with open(completercFile, 'w') as f:
         json.dump(constructCompleterc(api), f)
@@ -35,3 +40,5 @@ def scrapAndSerialize(docPath, completercFile):
 if __name__ == '__main__':
     if len(sys.argv) == 3:
         scrapAndSerialize(sys.argv[1], sys.argv[2])
+    else:
+        sys.exit(212)

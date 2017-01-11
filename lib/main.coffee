@@ -1,4 +1,4 @@
-{CompositeDisposable, BufferedProcess} = require 'atom'
+{CompositeDisposable, BufferedProcess, deserialize} = require 'atom'
 path = require 'path'
 os = require 'os' # os.platform(), os.homedir()
 fs = require 'fs' #fs.stat()
@@ -22,7 +22,8 @@ MOD_PATH = path.join(os.homedir(), MOD_PATH)
 verify_docupdate = (docDir, modDir) ->
   console.log "Verifiy Update"
   if not fs.existsSync(docDir)
-    throw console.error
+    atom.notifications.addWarning('Atom-boilua couldn\'t find the doc path')
+    return
   docDate = fs.statSync(docDir)['mtime']
 
   completercPath = path.join(modDir, '.luacompleterc')
@@ -34,24 +35,30 @@ verify_docupdate = (docDir, modDir) ->
 
 
 rebuild = (docDir, modDir) ->
-  console.log "Rebuild"
-  pythonPath = atom.config.get('atom-boilua.pythonPath')
-  provider = new BufferedProcess
-    command: pythonPath #Launches the python doc scraper
-    args: [
-      path.join(
-        atom.packages.resolvePackagePath('atom-boilua')
-        'lib/main.py')
-      docDir,
-      path.join(modDir, '.luacompleterc')
-    ]
-    stdout: (data) ->
-      console.log data
-      null
-  provider.onWillThrowError (error, __) ->
-    throw error
-  provider.process?.stdin.on 'error', (err) ->
-    console.log 'stdin', err
+  command = atom.config.get('atom-boilua.pythonPath')
+  args = [
+    path.join(atom.packages.resolvePackagePath('atom-boilua'), 'lib/main.py'),
+    docDir,
+    path.join(modDir, '.luacompleterc')
+  ]
+  stdout = (output) => console.log(output)
+  stderr = (output) =>
+    console.log 'in stderr handler'
+    errOptions = {
+      text: 'Failure in Atom-boilua caught',
+      description: '''The python scraper n\' serializer failed. Please
+      report your issues at https://github.com/GHGibonus/Atom-boilua/issues''',
+      detail: output,
+      dismissable: true
+    }
+    atom.notifications.addFatalError('Failure in Atom-boilua',errOptions)
+  exit = (code) =>
+    if code != 0
+      console.log("something happend")
+    if code == 0
+      atom.notifications.addInfo(
+        'Atom-boilua successfully generated the luacompleterc file')
+  process = new BufferedProcess({command, args, stdout, stderr, exit})
 
 #returns the path to the doc file
 docPath = ->
@@ -100,19 +107,19 @@ module.exports =
     null
 
   force_rebuild: ->
-    console.log "Force rebuild"
     rebuild(docPath(), atom.config.get('atom-boilua.modPath'))
     null
 
   #verify if we are in the modding directory
   verify_path: (editor) ->
     cur_path = editor.getPath()
-    if not cur_path is undefined
+    if cur_path != undefined
       cur_path = path.resolve(cur_path)
       modPath = atom.config.get('atom-boilua.modPath')
-      if cur_path.startsWith(modPath) and verify_docupdate(docPath(), modPath)
-        rebuild(docPath(), modPath)
+      if cur_path.startsWith(modPath)
+        if verify_docupdate(docPath(), modPath)
+          console.log modPath + '/.luacompleterc needs an update'
+          rebuild(docPath(), modPath)
     else
-      console.log "found an undefined path:" + cur_path
-    console.log "verify Path"
+      console.log cur_path + ' is undefined...'
     null
