@@ -20,14 +20,14 @@ def tryMatch(x: Match, prop: str) -> bool:
     except (IndexError, AttributeError):
         return False
 
-def tryMatchNone(x: Union[Match,None], prop: str) -> Optional[str]:
+def tryMatchNone(x: Optional[Match], prop: str) -> Optional[str]:
     """Convinence function to test existance of a group in an U[Match,None]."""
     if x is None:
         return None
     else:
         return x.group(prop)
 
-def tryMatchString(x: Union[Match,None], prop: str) -> str:
+def tryMatchString(x: Optional[Match], prop: str) -> str:
     """Like tryMatchNone but returns '' instead of None"""
     if x is None:
         return ''
