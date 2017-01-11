@@ -24,11 +24,11 @@ All the code has been refactored to adhere to a more readable standard and to im
 - Mini footprint: the scrapper only runs when you ask it to, or when the documentation is updated.
 
 
-![Quick Bloat Exemple](ressources/spawnmanybloats.gif)
+![Quick Bloat Exemple](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/ressources/spawnmanybloats.gif)
 
-![Documentation Exemple](ressources/documentation_exem.png)
+![Documentation Exemple](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/ressources/documentation_exem.png)
 
-![Type Exemple](ressources/type_inference_exem.png)
+![Type Exemple](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/ressources/type_inference_exem.png)
 
 
 ## **Installation**
