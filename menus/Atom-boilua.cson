@@ -1,0 +1,7 @@
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Rebuild BoI API'
+      'command': 'Atom-boilua:force-rebuild'
+    }
+  ]
