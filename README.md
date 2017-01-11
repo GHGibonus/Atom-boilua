@@ -17,13 +17,26 @@ The core documentation scraping functionality (specifically the regex paterns) i
 
 All the code has been refactored to adhere to a more readable standard and to improve the life of people who want to contribute or fork this package for other purposes. Note that however the two code-bases might look completly different, most of the scraper codes are stricly identical in logic.
 
+### **Features**
+- Smart, type-based autocompletion. (also surprisingly fast)
+- Transparent and easy to set up.
+- In-editor description of the functions (well, as documented as the API can get)
+- Mini footprint: the scrapper only runs when you ask it to, or when the documentation is updated.
+
+
+![Quick Bloat Exemple](ressources/spawnmanybloats.gif)
+
+![Documentation Exemple](ressources/documentation_exem.png)
+
+![Type Exemple](ressources/type_inference_exem.png)
+
 
 ## **Installation**
 
 ### **Requirements**
 - A [Python](https://www.python.org)3.5 or higher interpreter avaliable on the system.
 - The autocomplete-lua and language-lua packages.
-- The game that this package is supposed to help you mod, already installed!
+- The game that this package is supposed to help you mod, already installed.
 - The [Atom editor](https://atom.io/)
 
 Aquire all the forementioned software before going to the next section.
