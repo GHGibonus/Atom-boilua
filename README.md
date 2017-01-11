@@ -21,18 +21,18 @@ All the code has been refactored to adhere to a more readable standard and to im
 ## **Installation**
 
 ### **Requirements**
-- A Python3.5 or higher interpreter avaliable on the system.
+- A [Python](https://www.python.org)3.5 or higher interpreter avaliable on the system.
 - The autocomplete-lua and language-lua packages.
-- The game that this package is supposed to help you mod!
+- The game that this package is supposed to help you mod, already installed!
 - The [Atom editor](https://atom.io/)
 
 Aquire all the forementioned software before going to the next section.
 
 ### **Download**
 
-`apm install atom-boilua` et voila!
+`apm install Atom-boilua` et voila!
 
-You can also search for `atom-boilua` in the install tab and install it through the UI.
+You can also search for `Atom-boilua` in the install tab and install it through the UI.
 
 ### **Configuration**
 Please look into the package's settings to configure your installation.
@@ -48,26 +48,20 @@ Here is what you can find in the settings tab:
 ## **Inner Workings**
 The package creates a .luacompleterc file in your `binding of isaac afterbirth+ mod` folder, which the autocomplete-lua package will use to provide you with proper mod API suggestions.
 
-When you open a file in the isaac mod folder, atom-boilua will check if it needs to create or update a .luacompleterc by comparing the last modification time of the API documentation and the .luacompleterc file.
+When you open a file in the isaac mod folder, Atom-boilua will check if it needs to create or update a .luacompleterc by comparing the last modification time of the API documentation and the .luacompleterc file.
 
 It will then scrap the necessary informations from the doc and convert them into data readable by the autocomplete-lua package.
 
-This package uses pylint and MyPy to guarentee quality code and easy maintainability.
+If the package successfully create the luacompleterc file, it will notify you with a blue pop-up. If the blue pop-up didn't appear when you expected to, right click on your file and click `Rebuild BoI API` in the context menu. It should then work, or break, if it breaks report the issue.
+
 
 ## **Improvement leads**
 - It is definitely possible to port the Python code to coffee/javascript, and remove the Python dependency. I personally cannot do so, given that I do not have any experience with javascript.
 - The package is only tested on Linux, and Windows, however I'm working to make it work on all platforms, so contribute by submitting your bug report!
 
 ### **Progress**
-`Atom API       [###############] 💯%`
 
-`scraper        [#######################] 💯%`
-
-`completerc gen [###############] 💯%` ← Usability milestone
-
-`Testing        [#####--------------] 25%`
-
-`Time wasted making pretty ascii arts [##########] too much%`
+`Testing        [#############------] 65%`
 
 ## **License**
 See [**LICENSE.md**](LICENSE.md) for more information.

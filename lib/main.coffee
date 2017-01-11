@@ -1,4 +1,4 @@
-{CompositeDisposable, BufferedProcess, deserialize} = require 'atom'
+{CompositeDisposable, BufferedProcess} = require 'atom'
 path = require 'path'
 os = require 'os' # os.platform(), os.homedir()
 fs = require 'fs' #fs.stat()
@@ -7,7 +7,7 @@ MOD_PATH = null
 BOI_PATH = "steamapps/common/The Binding of Isaac Rebirth"
 if os.platform() == "win32"
   MOD_PATH = "Documents/My Games/Binding of Isaac Afterbirth+ Mods"
-  BOI_PATH = path.join("Program Files/steam", BOI_PATH)
+  BOI_PATH = path.join("C:/Program Files/Steam", BOI_PATH)
 else if os.platform() == "darwin"
   MOD_PATH = "Library/Application Support/Binding of Isaac Afterbirth+ Mods"
   BOI_PATH = path.join(os.homedir(), "Library/Application Support/Steam",
@@ -35,9 +35,9 @@ verify_docupdate = (docDir, modDir) ->
 
 
 rebuild = (docDir, modDir) ->
-  command = atom.config.get('atom-boilua.pythonPath')
+  command = atom.config.get('Atom-boilua.pythonPath')
   args = [
-    path.join(atom.packages.resolvePackagePath('atom-boilua'), 'lib/main.py'),
+    path.join(atom.packages.resolvePackagePath('Atom-boilua'), 'lib/main.py'),
     docDir,
     path.join(modDir, '.luacompleterc')
   ]
@@ -62,7 +62,7 @@ rebuild = (docDir, modDir) ->
 
 #returns the path to the doc file
 docPath = ->
-  path.join(atom.config.get('atom-boilua.isaacPath'), 'tools/LuaDocs')
+  path.join(atom.config.get('Atom-boilua.isaacPath'), 'tools/LuaDocs')
 
 
 module.exports =
@@ -102,12 +102,12 @@ module.exports =
   activate: (state) ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace',
-      'atom-boilua:force-rebuild' : => @force_rebuild()
+      'Atom-boilua:force-rebuild' : => @force_rebuild()
     atom.workspace.observeTextEditors @verify_path
     null
 
   force_rebuild: ->
-    rebuild(docPath(), atom.config.get('atom-boilua.modPath'))
+    rebuild(docPath(), atom.config.get('Atom-boilua.modPath'))
     null
 
   #verify if we are in the modding directory
@@ -115,7 +115,7 @@ module.exports =
     cur_path = editor.getPath()
     if cur_path != undefined
       cur_path = path.resolve(cur_path)
-      modPath = atom.config.get('atom-boilua.modPath')
+      modPath = atom.config.get('Atom-boilua.modPath')
       if cur_path.startsWith(modPath)
         if verify_docupdate(docPath(), modPath)
           console.log modPath + '/.luacompleterc needs an update'

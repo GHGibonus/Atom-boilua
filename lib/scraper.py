@@ -27,6 +27,14 @@ def tryMatchNone(x: Union[Match,None], prop: str) -> Optional[str]:
     else:
         return x.group(prop)
 
+def tryMatchString(x: Union[Match,None], prop: str) -> str:
+    """Like tryMatchNone but returns '' instead of None"""
+    if x is None:
+        return ''
+    else:
+        ret = x.group(prop)
+        return ret if ret is not None else ''
+
 
 class InvalidRematcher(Exception):
     """Rose when trying to create an object from an invalid matcher."""
@@ -287,11 +295,11 @@ def streamInit(openFile: IO) -> Optional[LuaEnumerator]:
         else:
             memberScraper = RE_ENUM_MEMBER.search(curLine)
             if memberScraper is not None:
-                descripString = tryMatchNone(memberScraper, 'desc')
+                descripString = tryMatchString(memberScraper, 'desc')
                 curMemberList += [EnumTag(
                     memberScraper.group('name'),
                     0, #the value enumTag field might be pertinent one day
-                    descripString
+                    RE_HTML_REPLACER.sub('', descripString)
                 )]
         oldPointerPosition = openFile.tell()
         curLine = openFile.readline()
