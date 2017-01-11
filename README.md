@@ -11,7 +11,7 @@ An Atom package to improve your Binding of Isaac modding experience.
 
 
 ## **Description**
-Atom-boilua is a package for the text editor [Atom](https://atom.io/) enabling autocompletion for the Lua modding API introduced in the Binding of Isaac: Rebirth dlc Afterbirth+.
+[Atom-boilua](https://github.com/GHGibonus/Atom-boilua) is a package for the text editor [Atom](https://atom.io/) enabling autocompletion for the Lua modding API introduced in the Binding of Isaac: Rebirth dlc Afterbirth+.
 
 The core documentation scraping functionality (specifically the regex paterns) is based on Kapiainen's Sublime plug-in [The Subliming of Isaac](https://github.com/Kapiainen/The-Subliming-Of-Isaac).
 
