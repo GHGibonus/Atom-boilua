@@ -7,6 +7,7 @@ An Atom package to improve your Binding of Isaac modding experience.
 ## **Contents**
 - [Description](#description)
 - [Installation](#installation)
+- [Patch notes](#Patch notes)
 - [License](#license)
 
 
@@ -72,9 +73,11 @@ If the package successfully create the luacompleterc file, it will notify you wi
 - It is definitely possible to port the Python code to coffee/javascript, and remove the Python dependency. I personally cannot do so, given that I do not have any experience with javascript.
 - The package is only tested on Linux, and Windows, however I'm working to make it work on all platforms, so contribute by submitting your bug report!
 
-### **Progress**
+## **Patch notes**
 
-`Testing        [#############------] 65%`
+### **1.1**
+
+The autocompletion now properly includes class constructors. variables created with a class constructor inherit from the type of their class, and proper suggestion is given when trying to access methods or attributes of the instance.
 
 ## **License**
 See [**LICENSE.md**](LICENSE.md) for more information.
