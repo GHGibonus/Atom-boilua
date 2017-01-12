@@ -14,14 +14,14 @@ from typing import (
 from scraper_regexs import *
 
 def tryMatch(x: Match, prop: str) -> bool:
-    """Convinence function to test existance of a group in match object"""
+    """Convinience function to test existance of a group in match object"""
     try:
         return x.group(prop) is not None
     except (IndexError, AttributeError):
         return False
 
 def tryMatchNone(x: Optional[Match], prop: str) -> Optional[str]:
-    """Convinence function to test existance of a group in an U[Match,None]."""
+    """Convinience function to test existance of a group in an U[Match,None]."""
     if x is None:
         return None
     else:
@@ -72,14 +72,20 @@ class LuaType:
     name = None #type: str
     isConst = None #type: bool
     isStatic = None #type: bool
-    def __init__(self, typeMatcher: Match= None) -> None:
-        if typeMatcher is None:
+
+    def __init__(self,
+                 typeHint: Union[Match, str]= None,
+                 isConst: bool= False,
+                 isStatic: bool= False) -> None:
+        if typeHint is None:
             self.__initFlat('nil')
-        else:
+        elif not isinstance(typeHint, str):
             self.__initFlat(
-                typeMatcher.group('type'),
-                tryMatch(typeMatcher, 'const'),
-                tryMatch(typeMatcher, 'static') )
+                typeHint.group('type'),
+                tryMatch(typeHint, 'const'),
+                tryMatch(typeHint, 'static') )
+        else:
+            self.__initFlat(typeHint, isConst, isStatic)
 
     def __initFlat(self,
                    name: str='', isConst: bool= False, isStatic: bool= False):
@@ -92,6 +98,7 @@ class LuaVariable:
     """A lua variable, inherited by classes describing attributes and other."""
     name = None #type: str
     luaType = None #type: LuaType
+
     def __init__(self, name: str, luaType: LuaType) -> None:
         self.name = name # type: str
         self.luaType = luaType # type: LuaType
@@ -99,8 +106,10 @@ class LuaVariable:
 
 class LuaParam(LuaVariable):
     """A parameter of a Lua function."""
-    def __init__(self, name: str, luaType: LuaType) -> None:
-        super().__init__(name, luaType)
+    def __init__(self, line: str) -> None:
+        """Initializes the parameter interpolating from line."""
+        paramMatcher = RE_FUNCTION_PARAMETER.search(line)
+        super().__init__(paramMatcher.group('name'), LuaType(paramMatcher))
 
 
 class LuaAttribute(LuaVariable):
@@ -108,6 +117,7 @@ class LuaAttribute(LuaVariable):
     The constructor can interpolate from the doc strings"""
     # super()
     description = None #type: str
+
     def __init__(self, line: str) -> None:
         """Initializes the attribute using a reg-exed line."""
         attribScraper = RE_ATTRIBUTE.search(line)
@@ -127,7 +137,10 @@ class LuaFunction:
     description = None #type: str
     parameters = None #type: List[LuaParam]
     returnType = None #type: LuaType
+
     def __init__(self, arg: Union[Match, str]) -> None:
+        """Initializes a function with a re.Match object or a string
+        to parse."""
         if not isinstance(arg, str):
             arg = cast(Match, arg)
             self.__initMatch(arg)
@@ -150,18 +163,10 @@ class LuaFunction:
         self.description = '' # type: str
 
     def _findParameters(self, paramMatchedVals: str):
-        """Finds the parameters and adds them to instance.
-
-        The type for paramMatchedVals is what I could interpolate from the
-        Python doc."""
-        self.parameters = [] # type: List[LuaParam]
-        if not paramMatchedVals:
-            return
+        """Finds the parameters and adds them to instance."""
+        if not paramMatchedVals: return
         paramScraper = RE_HTML_REPLACER.sub('', paramMatchedVals).split(', ')
-        for param in paramScraper: #IDEA: move parameter code to parameter class
-            paramMatcher = RE_FUNCTION_PARAMETER.search(param)
-            paramName = paramMatcher.group('name')
-            self.parameters += [LuaParam(paramName, LuaType(paramMatcher))]
+        self.parameters = [LuaParam(param) for param in paramScraper]
 
     def _findReturnval(self, retMatchval: str):
         """Finds the function return value in retMatchval."""
@@ -173,12 +178,20 @@ class LuaFunction:
             self.returnType = LuaType(returnMatcher) # type: LuaType
 
 
+class LuaMethod(LuaFunction):
+    """Extends lua functions to account for class constructors."""
+    def __init__(self, args: Union[Match, str], className: str) -> None:
+        super().__init__(args)
+        if self.name == className:
+            self.returnType = LuaType(className, isStatic= True)
+
+
 def _parseDescription(line: str) -> Optional[str]:
     """Returns a string if it parsed a description in line.
     Returns None otherwise."""
     try:
-        description = RE_HTML_REPLACER.sub(
-            '', RE_DESCRIPTION.search(line).group(1).strip() )
+        description = subHtmlFlags(
+            RE_DESCRIPTION.search(line).group(1).strip())
     except AttributeError:
         return None
     else:
@@ -192,6 +205,7 @@ class LuaClass:
     description = None #type: str
     methods = None #type: List[LuaFunction]
     attributes = None #type: List[LuaAttribute]
+
     def __init__(self, classPath: str) -> None:
         """Initializes the class based on infos gathered in the class file.
         TODO: implement parent class inheritance"""
@@ -238,6 +252,7 @@ class LuaNamespace:
     """Describes a lua namespace."""
     name = None #type: str
     functions = None #type: List[LuaFunction]
+
     def __init__(self, namespacePath: str) -> None:
         """Initializes the namespace descibed in the file namespacePath."""
         with open(namespacePath, 'r') as namespaceFile:
@@ -268,6 +283,7 @@ class LuaEnumerator:
     name = None # type: str
     members = None # type: List[EnumTag]
     streamInit = None # type: Callable[[IO],Optional[LuaEnumerator]]
+
     def __init__(self, name: str, members: List[EnumTag]) -> None:
         """Initializes the class as a struct."""
         self.name = name
@@ -282,6 +298,7 @@ def streamInit(openFile: IO) -> Optional[LuaEnumerator]:
     be modified by this function."""
     curMemberList = [] # type: List[EnumTag]
     curEnumName = None # type: str
+
     oldPointerPosition = openFile.tell()
     curLine = openFile.readline() # type: str
     while curLine != '':
@@ -322,26 +339,32 @@ def allDocFiles(docPath: str) -> Iterator[Tuple[str, str]]:
         if dirEntry.is_dir():
             try: assert dirEntry.name == 'search'
             except AssertionError: raise UpdatedDocError
+
             for searchFile in os.scandir(dirEntry.path):
                 yield searchFile.name, dirEntry.path
         else:
             yield dirEntry.name, docPath
 
 
-def categorizeFiles(docPath: str) -> Tuple[List[str], List[str], List[str]]:
+def categorizeFiles(docPath: str) \
+        -> Tuple[List[str], List[str], List[str], List[str]]:
     """Lists all pertinent files in the documentation.
     Returns: class-files, namespace-files, enumerator-files"""
+
     def isClassFile(name: str) -> bool: #filter for class-description files
         """Returns True if name matches a class description file."""
         return re.fullmatch(r'class_[0-9A-Za-z_]*(?!-members.html)\.html',
                             name) is not None
-    classFiles = [] # type: List[str]
-    for (curFile, curDir) in allDocFiles(docPath):
-        if isClassFile(curFile):
-            classFiles += [pth.join(curDir, curFile)]
-    namespaceFiles = [pth.join(docPath, 'namespace_isaac.html')]
-    enumFiles = [pth.join(docPath, 'group___enumerations.html')]
-    return classFiles, namespaceFiles, enumFiles
+    #classFiles = [] # type: List[str]
+    #for (curFile, curDir) in allDocFiles(docPath):
+    #    if isClassFile(curFile):
+    #        classFiles += [pth.join(curDir, curFile)]
+    return (
+        [pth.join(curDir, curFile) for curFile, curDir in allDocFiles(docPath)
+                                   if isClassFile(curFile)],
+        [pth.join(docPath, 'namespace_isaac.html')],
+        [pth.join(docPath, 'group___enumerations.html')],
+        [pth.join(docPath, 'group___functions.html')] )
 
 
 class AfterbirthApi:
@@ -349,13 +372,14 @@ class AfterbirthApi:
     classes = [] # type: List[LuaClass]
     enumerators = [] # type: List[LuaEnumerator]
     namespaces = [] # type: List[LuaNamespace]
+    globalFunctions = [] # type: List[LuaFunction]
+
     def __init__(self, docPath: str) -> None:
-        classFiles, nsFiles, enumFiles = categorizeFiles(docPath)
-        for curFile in classFiles:
-            self.classes += [LuaClass(curFile)]
-        for curFile in nsFiles:
-            self.namespaces += [LuaNamespace(curFile)]
-        for curFile in enumFiles:
+        classFiles, nsFiles, enumFiles, funFiles = categorizeFiles(docPath)
+
+        self.classes = [LuaClass(f) for f in classFiles]
+        self.namespaces = [LuaNamespace(f) for f in nsFiles]
+        for curFile in enumFiles + funFiles:
             with open(curFile, 'r') as enumStream:
                 while True: #do while, breaks when reached end of stream
                     curEnum = LuaEnumerator.streamInit(enumStream)

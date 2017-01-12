@@ -60,3 +60,10 @@ RE_DESCRIPTION = re.compile(r"<td class=\"mdescright\">(.+?)<a.+?</td>",
 _reic)
 
 RE_HTML_REPLACER = re.compile(r"<.*?>")
+
+
+def subHtmlFlags(toReplace: str) -> str:
+    """Returns a version of the string where html tags are replaced
+    by their plaintext equivalent."""
+    ret = RE_HTML_REPLACER.sub('', toReplace)
+    return ret.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;','>')
