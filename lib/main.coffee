@@ -26,7 +26,7 @@ verify_docupdate = (docDir, modDir) ->
     return
   docDate = fs.statSync(docDir)['mtime']
   completercPath = path.join(modDir, '.luacompleterc')
-  moduleDate = fs.stateSync(
+  moduleDate = fs.statSync(
     atom.packages.resolvePackagePath('Atom-boilua') )['mtime']
   completercDate= fs.statSync(completercPath)['mtime']
   if not fs.existsSync(completercPath) #if file does not exist, returns
