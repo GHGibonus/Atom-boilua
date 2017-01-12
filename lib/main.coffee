@@ -47,7 +47,10 @@ rebuild = (docDir, modDir) ->
     errOptions = {
       text: 'Failure in Atom-boilua caught',
       description: '''The python scraper n\' serializer failed. Please
-      report your issues at https://github.com/GHGibonus/Atom-boilua/issues''',
+      report your issues at https://github.com/GHGibonus/Atom-boilua/issues
+
+      Atom might be modest and pretend it is its own fault, but it is lying if
+      the traceback you see is Python source code.''',
       detail: output,
       dismissable: true
     }

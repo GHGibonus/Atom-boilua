@@ -15,10 +15,6 @@ from scraper import (
 # This package uses the autocomplete-lua completion provider, use
 # that format to write your custom variables.
 CUSTOM_GLOBALS = {
-    'Game': {
-        'type': 'function',
-        'returnTypes': [{'type': 'ref', 'name': 'Game'}]
-    },
     'RegisterMod': {
         'type': 'function',
         'description': 'Register your mod using this function.',
@@ -34,19 +30,18 @@ CUSTOM_FUNCTIONS = {
 }
 
 
-
-def serializedType(luaType: LuaType) -> dict:
-    if luaType.name in ('boolean', 'integer', 'float', 'string'):
+def serializedType(luaType: LuaType):
+    if luaType.name in ('boolean', 'integer', 'float', 'string', 'nil'):
         return {'type': luaType.name}
     else:
         return {'type': 'ref', 'name': luaType.name}
 
-def serializedAttrib(var: LuaAttribute) -> dict:
+def serializedAttrib(var: LuaAttribute):
     ret = serializedType(var.luaType)
     ret.update({'description': var.description})
     return ret
 
-def serializedFunction(fun : LuaFunction, isMethod: bool= False) -> dict:
+def serializedFunction(fun: LuaFunction, isMethod: bool= False):
     ret = {
         'type': 'function',
         'description': fun.description,
@@ -65,10 +60,9 @@ def serializedFunction(fun : LuaFunction, isMethod: bool= False) -> dict:
     if fun.name in CUSTOM_FUNCTIONS.keys():
         for key in CUSTOM_FUNCTIONS[fun.name]:
             ret[key] = CUSTOM_FUNCTIONS[fun.name][key]
-
     return ret
 
-def serializedClass(c: LuaClass) -> dict:
+def serializedClass(c: LuaClass):
     ret = {
         'type': 'table',
         'fields': {},
@@ -77,10 +71,11 @@ def serializedClass(c: LuaClass) -> dict:
     for attrib in c.attributes:
         ret['fields'][attrib.name] = serializedAttrib(attrib)
     for method in c.methods:
-        ret['fields'][method.name] = serializedFunction(method, True)
+        if method.name != c.name:
+            ret['fields'][method.name] = serializedFunction(method, True)
     return ret
 
-def serializedEnumeration(e: LuaEnumerator) -> dict:
+def serializedEnumeration(e: LuaEnumerator):
     ret = {
         'type': 'table',
         'fields': {},
@@ -92,7 +87,7 @@ def serializedEnumeration(e: LuaEnumerator) -> dict:
         }
     return ret
 
-def serializedNamespace(ns: LuaNamespace) -> dict:
+def serializedNamespace(ns: LuaNamespace):
     ret = {
         'type': 'table',
         'fields': {},
@@ -111,13 +106,19 @@ def constructCompleterc(api: AfterbirthApi):
     }
     for c in api.classes:
         globalScope['namedTypes'][c.name] = serializedClass(c)
-        globalScope['global']['fields'][c.name] = serializedClass(c)
+        if c.constructor is not None:
+            globalScope['global']['fields'][c.name] =\
+                serializedFunction(c.constructor)
     for e in api.enumerators:
         globalScope['namedTypes'][e.name] = serializedEnumeration(e)
         globalScope['global']['fields'][e.name] = serializedEnumeration(e)
     for ns in api.namespaces:
-        globalScope['namedTypes'][ns.name] = serializedNamespace(ns)
-        globalScope['global']['fields'][ns.name] = serializedNamespace(ns)
+        if ns.name == '_G':
+            for f in ns.functions:
+                globalScope['global']['fields'][f.name] = serializedFunction(f)
+        else:
+            globalScope['namedTypes'][ns.name] = serializedNamespace(ns)
+            globalScope['global']['fields'][ns.name] = serializedNamespace(ns)
     for gKey in CUSTOM_GLOBALS:
         globalScope['global']['fields'][gKey] = CUSTOM_GLOBALS[gKey]
     for vKey in CUSTOM_TYPES:

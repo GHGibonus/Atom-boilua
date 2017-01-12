@@ -100,8 +100,10 @@ class LuaVariable:
     luaType = None #type: LuaType
 
     def __init__(self, name: str, luaType: LuaType) -> None:
-        self.name = name # type: str
-        self.luaType = luaType # type: LuaType
+        self.luaType = luaType
+        if name == '':
+            name = self.luaType.name
+        self.name = name
 
 
 class LuaParam(LuaVariable):
@@ -109,7 +111,9 @@ class LuaParam(LuaVariable):
     def __init__(self, line: str) -> None:
         """Initializes the parameter interpolating from line."""
         paramMatcher = RE_FUNCTION_PARAMETER.search(line)
-        super().__init__(paramMatcher.group('name'), LuaType(paramMatcher))
+        super().__init__(
+            tryMatchString(paramMatcher, 'name'),
+            LuaType(paramMatcher) )
 
 
 class LuaAttribute(LuaVariable):
@@ -135,7 +139,7 @@ class LuaFunction:
     """A structure to hold information about lua functions."""
     name = None #type: str
     description = None #type: str
-    parameters = None #type: List[LuaParam]
+    parameters = [] #type: List[LuaParam]
     returnType = None #type: LuaType
 
     def __init__(self, arg: Union[Match, str]) -> None:
@@ -166,7 +170,7 @@ class LuaFunction:
         """Finds the parameters and adds them to instance."""
         if not paramMatchedVals: return
         paramScraper = RE_HTML_REPLACER.sub('', paramMatchedVals).split(', ')
-        self.parameters = [LuaParam(param) for param in paramScraper]
+        self.parameters = [LuaParam(param) for param in paramScraper if param]
 
     def _findReturnval(self, retMatchval: str):
         """Finds the function return value in retMatchval."""
@@ -180,10 +184,11 @@ class LuaFunction:
 
 class LuaMethod(LuaFunction):
     """Extends lua functions to account for class constructors."""
-    def __init__(self, args: Union[Match, str], className: str) -> None:
+    def __init__(self, args: Union[Match, str], class_: 'LuaClass') -> None:
         super().__init__(args)
-        if self.name == className:
-            self.returnType = LuaType(className, isStatic= True)
+        if self.name == class_.name:
+            self.returnType = LuaType(class_.name, isStatic= True)
+            class_.constructor = self
 
 
 def _parseDescription(line: str) -> Optional[str]:
@@ -203,8 +208,9 @@ class LuaClass:
     parents = None #type: List[LuaClass]
     name = None #type: str
     description = None #type: str
-    methods = None #type: List[LuaFunction]
-    attributes = None #type: List[LuaAttribute]
+    methods = [] #type: List[LuaMethod]
+    attributes = [] #type: List[LuaAttribute]
+    constructor = None #type: LuaMethod
 
     def __init__(self, classPath: str) -> None:
         """Initializes the class based on infos gathered in the class file.
@@ -214,7 +220,7 @@ class LuaClass:
             self.name = RE_CLASS_NAME.search(content).group(1) # type: str
             self._parentNames = [] # type: List[str]
             self.attributes = [] # type: List[LuaAttribute]
-            self.methods = [] # type: List[LuaFunction]
+            self.methods = [] # type: List[LuaMethod]
 
             inheritedMatcher = RE_INHERITS_FROM.search(content)
             if inheritedMatcher is not None:
@@ -228,7 +234,7 @@ class LuaClass:
             lastSet = 0 # be attributed
             for curLine in classFile:
                 try: #try to find a function.
-                    self.methods += [LuaFunction(curLine)]
+                    self.methods += [LuaMethod(curLine, self)]
                 except InvalidFunctionRematcher: pass
                 else: lastSet = METHOD_SET
 
@@ -257,7 +263,13 @@ class LuaNamespace:
         """Initializes the namespace descibed in the file namespacePath."""
         with open(namespacePath, 'r') as namespaceFile:
             content = namespaceFile.read()
-            self.name = RE_NAMESPACE_NAME.search(content).group(1) # type: str
+            try:
+                self.name = RE_NAMESPACE_NAME.search(content).group(1)
+            except AttributeError as e: #HACK: global functions are in global
+                if pth.basename(namespacePath) == 'group___functions.html':
+                    self.name = '_G'
+                else:
+                    raise e
             self.functions = [] # type: List[LuaFunction]
             del content
 
@@ -355,10 +367,6 @@ def categorizeFiles(docPath: str) \
         """Returns True if name matches a class description file."""
         return re.fullmatch(r'class_[0-9A-Za-z_]*(?!-members.html)\.html',
                             name) is not None
-    #classFiles = [] # type: List[str]
-    #for (curFile, curDir) in allDocFiles(docPath):
-    #    if isClassFile(curFile):
-    #        classFiles += [pth.join(curDir, curFile)]
     return (
         [pth.join(curDir, curFile) for curFile, curDir in allDocFiles(docPath)
                                    if isClassFile(curFile)],
@@ -372,14 +380,13 @@ class AfterbirthApi:
     classes = [] # type: List[LuaClass]
     enumerators = [] # type: List[LuaEnumerator]
     namespaces = [] # type: List[LuaNamespace]
-    globalFunctions = [] # type: List[LuaFunction]
 
     def __init__(self, docPath: str) -> None:
         classFiles, nsFiles, enumFiles, funFiles = categorizeFiles(docPath)
 
         self.classes = [LuaClass(f) for f in classFiles]
-        self.namespaces = [LuaNamespace(f) for f in nsFiles]
-        for curFile in enumFiles + funFiles:
+        self.namespaces = [LuaNamespace(f) for f in nsFiles + funFiles]
+        for curFile in enumFiles:
             with open(curFile, 'r') as enumStream:
                 while True: #do while, breaks when reached end of stream
                     curEnum = LuaEnumerator.streamInit(enumStream)
