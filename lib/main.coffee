@@ -43,8 +43,8 @@ rebuild = (docDir, modDir) ->
     docDir,
     path.join(modDir, '.luacompleterc')
   ]
-  stdout = (output) => console.log(output)
-  stderr = (output) =>
+  stdout = (output) -> console.log(output)
+  stderr = (output) ->
     console.log 'in stderr handler'
     errOptions = {
       text: 'Failure in Atom-boilua caught',
@@ -57,7 +57,7 @@ rebuild = (docDir, modDir) ->
       dismissable: true
     }
     atom.notifications.addFatalError('Failure in Atom-boilua',errOptions)
-  exit = (code) =>
+  exit = (code) ->
     if code != 0
       console.log("something happend")
     if code == 0
