@@ -36,6 +36,7 @@ All the code has been refactored to adhere to a more readable standard and to im
 
 ### **Requirements**
 - A [Python](https://www.python.org)3.5 or higher interpreter avaliable on the system.
+- Note, on **Windows**, Python 3.5 might cause issues, install Python 3.6 instead. On Linux, the most recent version avaliable in your distro should work fine.
 - The autocomplete-lua and language-lua packages.
 - The game that this package is supposed to help you mod, already installed.
 - The [Atom editor](https://atom.io/)
