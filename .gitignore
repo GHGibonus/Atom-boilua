@@ -2,4 +2,5 @@
 .gitignore
 *.tags*
 test*
+coffeelint.json
 *__pycache__

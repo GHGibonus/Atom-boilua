@@ -28,17 +28,18 @@ CUSTOM_TYPES = {
 
 CUSTOM_FUNCTIONS = {
     'GetRoomEntities': {
-        'returnTypes': [{'type': 'ref', 'name': 'Entity'}]
+        'returnTypes': [{'type': 'unknown'}]
     }
 }
 
 
 def serializedType(luaType: LuaType):
-    if luaType.name in ('boolean','integer',
-                        'float', 'string', 'nil', 'table'):
+    if luaType.name in ('boolean', 'string', 'nil'):
         return {'type': luaType.name}
-    elif luaType.name == 'int':
-        return {'type': 'integer'}
+    elif luaType.name in ('int', 'float', 'integer'):
+        return {'type': 'number'}
+    elif luaType.name == 'table':
+        return {'type': 'unknown'}
     else:
         return {'type': 'ref', 'name': luaType.name}
 

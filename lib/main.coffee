@@ -28,13 +28,14 @@ verify_docupdate = (docDir, modDir) ->
     completercPath = path.join(modDir, '.luacompleterc')
     moduleDate = fs.statSync(
         atom.packages.resolvePackagePath('Atom-boilua') )['mtime']
-    completercDate= fs.statSync(completercPath)['mtime']
     if not fs.existsSync(completercPath) #if file does not exist, returns
         return true
-    else if moduleDate.getTime() > completercDate.getTime()
-        return true
     else
-        return docDate.getTime() > completercDate.getTime()
+        completercDate= fs.statSync(completercPath)['mtime']
+        if moduleDate.getTime() > completercDate.getTime()
+            return true
+        else
+            return docDate.getTime() > completercDate.getTime()
 
 rebuild = (docDir, modDir) ->
     command = atom.config.get('Atom-boilua.pythonPath')
