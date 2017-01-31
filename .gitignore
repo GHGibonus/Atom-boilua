@@ -3,4 +3,5 @@
 *.tags*
 test*
 coffeelint.json
+node_modules
 *__pycache__

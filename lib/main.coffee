@@ -1,5 +1,5 @@
 {CompositeDisposable, BufferedProcess} = require 'atom'
-{AbpModdingSnippets} = require './provider'
+AbpModdingSnippets = require './provider'
 path = require 'path'
 os = require 'os' # os.platform(), os.homedir()
 fs = require 'fs' #fs.stat()
@@ -133,4 +133,4 @@ module.exports =
         null
 
     getOptionProvider: () ->
-        return AbpModdingSnippets
+        return new AbpModdingSnippets()

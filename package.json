@@ -16,10 +16,13 @@
     "language-lua"
   ],
   "providedServices": {
-    "autocomplete-lua.options-provider": {
-      "version": {
-        "1.0.0": "getOptionProvider"
+    "autocomplete.provider": {
+      "versions": {
+        "2.0.0": "getOptionProvider"
       }
     }
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.0.0"
   }
 }
