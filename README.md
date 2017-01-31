@@ -76,9 +76,7 @@ If the package successfully create the luacompleterc file, it will notify you wi
 
 ## **Patch notes**
 
-### **1.1**
-
-The autocompletion now properly includes class constructors. variables created with a class constructor inherit from the type of their class, and proper suggestion is given when trying to access methods or attributes of the instance.
+See the patch notes on Github: https://github.com/GHGibonus/Atom-boilua/releases
 
 ## **License**
 See [**LICENSE.md**](LICENSE.md) for more information.
