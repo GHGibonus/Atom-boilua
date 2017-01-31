@@ -14,5 +14,12 @@
   "package-deps": [
     "autocomplete-lua",
     "language-lua"
-  ]
+  ],
+  "providedServices": {
+    "autocomplete-lua.options-provider": {
+      "version": {
+        "1.0.0": "getOptionProvider"
+      }
+    }
+  }
 }

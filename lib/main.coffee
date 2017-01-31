@@ -1,4 +1,5 @@
 {CompositeDisposable, BufferedProcess} = require 'atom'
+{AbpModdingSnippets} = require './provider'
 path = require 'path'
 os = require 'os' # os.platform(), os.homedir()
 fs = require 'fs' #fs.stat()
@@ -130,3 +131,6 @@ module.exports =
         else
             console.log cur_path + ' is undefined...'
         null
+
+    getOptionProvider: () ->
+        return AbpModdingSnippets
