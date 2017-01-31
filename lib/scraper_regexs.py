@@ -47,7 +47,7 @@ _reic)
 
 
 RE_ENUM_NAME =re.compile(
-r"<h2 class=\"memtitle\"><span class=\"permalink\">.+?</span>(.+?)</h2>",
+r"<h2 class=\"memtitle\"><span class=\"permalink\">\s*<a href=\"#(?P<link>\w+?)\">.+?</span>(?P<name>.+?)</h2>",
 _reic)
 
 

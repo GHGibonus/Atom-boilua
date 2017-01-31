@@ -66,6 +66,21 @@ class UpdatedDocError(Exception):
         self.message = msg
 
 
+class DocDescription:
+    """Holds the description and link to the documentation entry."""
+    description = None #type: str
+    link = None #type: Optional[str]
+
+    def __init__(self, description: str, docLink: Optional[str]) -> None:
+        self.description = description
+        # TODO:
+        # once https://github.com/atom/autocomplete-plus/pull/763 merged, use:
+        # self.link = 'file://' + docLink if docLink else None
+        # instead
+        self.link = 'https://moddingofisaac.com/docs/' + pth.basename(docLink)\
+                        if docLink else None
+
+
 class LuaType:
     """A simple lua type description.
     The constructor provides means to interpolate the type from the docs."""
@@ -120,7 +135,7 @@ class LuaAttribute(LuaVariable):
     """An attribute of a Lua class.
     The constructor can interpolate from the doc strings"""
     # super()
-    description = None #type: str
+    description = None #type: DocDescription
 
     def __init__(self, line: str) -> None:
         """Initializes the attribute using a reg-exed line."""
@@ -131,14 +146,13 @@ class LuaAttribute(LuaVariable):
         self.name = name # type: str
         typeFetcher = RE_ATTRIBUTE_TYPE.search(
             RE_HTML_REPLACER.sub('', attribScraper.group('type')))
-        self.description = '' # type: str
         self.luaType = LuaType(typeFetcher) # type: LuaType
 
 
 class LuaFunction:
     """A structure to hold information about lua functions."""
     name = None #type: str
-    description = None #type: str
+    description = None #type: DocDescription
     parameters = [] #type: List[LuaParam]
     returnType = None #type: LuaType
 
@@ -164,7 +178,6 @@ class LuaFunction:
         self.name = functionRematcher.group('name') # type: str
         self._findParameters(functionRematcher.group('parameters'))
         self._findReturnval(functionRematcher.group('returns'))
-        self.description = '' # type: str
 
     def _findParameters(self, paramMatchedVals: str):
         """Finds the parameters and adds them to instance."""
@@ -207,21 +220,23 @@ class LuaClass:
     """Describes a lua class."""
     parents = None #type: List[LuaClass]
     name = None #type: str
-    description = None #type: str
+    description = None #type: DocDescription # Unused
     methods = [] #type: List[LuaMethod]
     attributes = [] #type: List[LuaAttribute]
     constructor = None #type: LuaMethod
 
     def __init__(self, classPath: str) -> None:
-        """Initializes the class based on infos gathered in the class file.
-        TODO: implement parent class inheritance"""
+        """Initializes the class based on infos gathered in the class file."""
         with open(classPath, 'r') as classFile:
             content = classFile.read()
             self.name = RE_CLASS_NAME.search(content).group(1) # type: str
+            self.description = DocDescription(self.name + ' instance',
+                                              classPath)
             self._parentNames = [] # type: List[str]
             self.attributes = [] # type: List[LuaAttribute]
             self.methods = [] # type: List[LuaMethod]
 
+            # Currently, inheritance has no purpose.
             inheritedMatcher = RE_INHERITS_FROM.search(content)
             if inheritedMatcher is not None:
                 self._parentNames += [inheritedMatcher.group(1)]
@@ -243,15 +258,15 @@ class LuaClass:
                 except InvalidAttributeRematcher: pass
                 else: lastSet = ATTRIB_SET
 
+                # finds description for previously found field of class
                 lineDescr = _parseDescription(curLine)
-                if lineDescr is None:
-                    continue
-                else:
+                if lineDescr is not None:
                     if lastSet == METHOD_SET:
-                        self.methods[-1].description = lineDescr
+                        self.methods[-1].description = \
+                            DocDescription(lineDescr, classPath)
                     elif lastSet == ATTRIB_SET:
-                        self.attributes[-1].description = lineDescr
-                    else: continue
+                        self.attributes[-1].description = \
+                            DocDescription(lineDescr, classPath)
 
 
 class LuaNamespace:
@@ -281,7 +296,8 @@ class LuaNamespace:
 
                 lineDescr = _parseDescription(curLine)
                 if lineDescr is not None:
-                    self.functions[-1].description = lineDescr
+                    self.functions[-1].description = \
+                        DocDescription(lineDescr, None)
 
 
 EnumTag = NamedTuple('EnumTag', [
@@ -292,17 +308,20 @@ EnumTag = NamedTuple('EnumTag', [
 
 
 class LuaEnumerator:
+    """A lua enumerator, contains all its members."""
     name = None # type: str
     members = None # type: List[EnumTag]
     streamInit = None # type: Callable[[IO],Optional[LuaEnumerator]]
+    description = None # type: DocDescription
 
-    def __init__(self, name: str, members: List[EnumTag]) -> None:
+    def __init__(self, name: str, link: str, members: List[EnumTag]) -> None:
         """Initializes the class as a struct."""
         self.name = name
         self.members = members
+        self.description = DocDescription('Enum ' + name, link)
 
 
-def streamInit(openFile: IO) -> Optional[LuaEnumerator]:
+def __streamInit(openFile: IO) -> Optional[LuaEnumerator]:
     """Reads the text stream for a lua enumerator.
 
     It will reads the stream untill it completes a LuaEnumerator,
@@ -310,34 +329,38 @@ def streamInit(openFile: IO) -> Optional[LuaEnumerator]:
     be modified by this function."""
     curMemberList = [] # type: List[EnumTag]
     curEnumName = None # type: str
+    fileName = openFile.name
 
     oldPointerPosition = openFile.tell()
     curLine = openFile.readline() # type: str
     while curLine != '':
         enumNameScraper = RE_ENUM_NAME.search(curLine)
-        if enumNameScraper is not None:
+        if enumNameScraper is not None: # We find the enumerator specification
             if curEnumName is None:
-                curEnumName = enumNameScraper.group(1)
+                curEnumName = enumNameScraper.group('name')
+                curEnumLink = enumNameScraper.group('link')
             else:
-                openFile.seek(oldPointerPosition) #unconsumes last line
-                return LuaEnumerator(curEnumName, curMemberList)
+                openFile.seek(oldPointerPosition) # unconsumes last line
+                return LuaEnumerator(curEnumName,
+                                     fileName + '#' + curEnumLink,
+                                     curMemberList)
         else:
             memberScraper = RE_ENUM_MEMBER.search(curLine)
-            if memberScraper is not None:
+            if memberScraper is not None: # We find an enum field specification
                 descripString = tryMatchString(memberScraper, 'desc')
                 curMemberList += [EnumTag(
                     memberScraper.group('name'),
-                    0, #the value enumTag field might be pertinent one day
+                    0, # the value enumTag field might be pertinent one day
                     RE_HTML_REPLACER.sub('', descripString)
                 )]
         oldPointerPosition = openFile.tell()
         curLine = openFile.readline()
     # reached end of file
     if curEnumName is not None:
-        return LuaEnumerator(curEnumName, curMemberList)
+        return LuaEnumerator(curEnumName, curEnumLink, curMemberList)
     else:
         return None
-LuaEnumerator.streamInit = streamInit #add the method to the class as static
+LuaEnumerator.streamInit = __streamInit # add the method to the class as static
 
 
 def allDocFiles(docPath: str) -> Iterator[Tuple[str, str]]:

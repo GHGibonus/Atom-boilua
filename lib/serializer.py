@@ -45,13 +45,18 @@ def serializedType(luaType: LuaType):
 
 def serializedAttrib(var: LuaAttribute):
     ret = serializedType(var.luaType)
-    ret.update({'description': var.description})
+    ret.update({
+        'description': var.description.description \
+                           if var.description else None
+    })
     return ret
 
 def serializedFunction(fun: LuaFunction, isMethod: bool= False):
     ret = {
         'type': 'function',
-        'description': fun.description,
+        'description': fun.description.description \
+                          if fun.description else None,
+        'link': fun.description.link if fun.description else None,
         'returnTypes': [serializedType(fun.returnType)],
         'args': [],
         'argTypes': []
@@ -73,7 +78,8 @@ def serializedClass(c: LuaClass):
     ret = {
         'type': 'table',
         'fields': {},
-        'description': c.description
+        'description': c.description.description if c.description else None,
+        'link': c.description.link if c.description else None
     }
     for attrib in c.attributes:
         ret['fields'][attrib.name] = serializedAttrib(attrib)
@@ -85,12 +91,14 @@ def serializedClass(c: LuaClass):
 def serializedEnumeration(e: LuaEnumerator):
     ret = {
         'type': 'table',
-        'fields': {},
+        'description': e.description.description if e.description else None,
+        'link': e.description.link if e.description else None,
+        'fields': {}
     }
     for m in e.members:
         ret['fields'][m.name] = {
-            'type': 'integer',
-            'description': m.description
+            'type': 'number',
+            'description': m.description,
         }
     return ret
 
@@ -111,14 +119,18 @@ def constructCompleterc(api: AfterbirthApi):
         },
         'namedTypes':{}
     }
+    for e in api.enumerators:
+        globalScope['global']['fields'][e.name] = serializedEnumeration(e)
+        globalScope['namedTypes'][e.name] = {
+            'type': 'number',
+            'description': e.description.description if e.description else None,
+            'link': e.description.link if e.description else None
+        }
     for c in api.classes:
         globalScope['namedTypes'][c.name] = serializedClass(c)
         if c.constructor is not None:
             globalScope['global']['fields'][c.name] =\
                 serializedFunction(c.constructor)
-    for e in api.enumerators:
-        globalScope['namedTypes'][e.name] = serializedEnumeration(e)
-        globalScope['global']['fields'][e.name] = serializedEnumeration(e)
     for ns in api.namespaces:
         if ns.name == '_G':
             for f in ns.functions:
