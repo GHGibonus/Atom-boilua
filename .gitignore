@@ -4,4 +4,5 @@
 test*
 coffeelint.json
 node_modules
+TODO.txt
 *__pycache__

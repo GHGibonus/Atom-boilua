@@ -1,0 +1,48 @@
+{
+  "players": {
+    "needsContentGFX": true,
+    "requires": [
+      "players.xml",
+      "costumes2.xml"
+    ],
+    "resourceFolders": [
+      "gfx/characters"
+    ]
+  },
+  "items": {
+    "needsContentGFX": false,
+    "requires": [
+      "itempools.xml",
+      "items.xml",
+      "costumes2.xml"
+    ],
+    "resourceFolders": [
+      "gfx/items/collectibles",
+      "gfx/characters/costumes"
+    ]
+  },
+  "challenges": {
+    "needsContentGFX": false,
+    "requires": [
+      "challenges.xml"
+    ]
+  },
+  "entities": {
+    "needsContentGFX": false,
+    "requires": [
+      "entities2.xml"
+    ],
+    "resourceFolders": [
+
+    ]
+  },
+  "pillcards": {
+
+  },
+  "curses": {
+
+  },
+  "floors": {
+
+  }
+}
