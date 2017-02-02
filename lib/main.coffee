@@ -2,7 +2,7 @@
 AbpModdingSnippets = require './provider'
 path = require 'path'
 os = require 'os' # os.platform(), os.homedir()
-fs = require 'fs' #fs.stat()
+fs = require 'fs' #fs.statSync(), fs.unlinkSync(), fs.existsSync
 
 MOD_PATH = null
 BOI_PATH = "steamapps/common/The Binding of Isaac Rebirth"
@@ -72,6 +72,27 @@ rebuild = (docDir, modDir) ->
 docPath = ->
     path.join(atom.config.get('Atom-boilua.isaacPath'), 'tools/LuaDocs')
 
+# deletes the annoying 'update.it' file that marks mods as out of date,
+# which breaks the flow of developpement.
+deleteUpdateIt = (event) ->
+    mod_path = atom.config.get('Atom-boilua.modPath')
+    # Finds recursively the directory of the mod we are working on
+    findModDir = (cur_path) ->
+        if path.dirname(cur_path) == mod_path
+            return cur_path
+        else if path.parse(cur_path).root == cur_path
+            return false # we weren't in the mod dir in the first place...
+        else
+            return findModDir(path.dirname(cur_path))
+    updateit_path = path.join(findModDir(event.path), 'update.it')
+    if updateit_path and fs.existsSync(updateit_path)
+        # double check we are indeed deleting an 'update.it' file,
+        # to make 100% sure we don't fuck up users' file system.
+        if path.basename(updateit_path) == 'update.it'
+            fs.unlinkSync(updateit_path)
+        else
+            console.log('almost deleted ', updateit_path, '!!! close one.')
+    return null
 
 module.exports =
     #config schema
@@ -118,19 +139,21 @@ module.exports =
         rebuild(docPath(), atom.config.get('Atom-boilua.modPath'))
         null
 
-    #verify if we are in the modding directory
+    getOptionProvider: () ->
+        return new AbpModdingSnippets()
+
+    # verify if we are in the modding directory, if so, we check the API doc
+    # updateness and we setup automatic deletion of the update.it file
     verify_path: (editor) ->
         cur_path = editor.getPath()
         if cur_path != undefined
             cur_path = path.resolve(cur_path)
             modPath = atom.config.get('Atom-boilua.modPath')
             if cur_path.startsWith(modPath)
+                editor.onDidSave(deleteUpdateIt)
                 if verify_docupdate(docPath(), modPath)
                     console.log modPath + '/.luacompleterc needs an update'
                     rebuild(docPath(), modPath)
         else
             console.log cur_path + ' is undefined...'
         null
-
-    getOptionProvider: () ->
-        return new AbpModdingSnippets()
