@@ -1,8 +1,11 @@
 {CompositeDisposable, BufferedProcess} = require 'atom'
+
 AbpModdingSnippets = require './provider'
+{createModgenPane} = require './modgen'
+
 path = require 'path'
 os = require 'os' # os.platform(), os.homedir()
-fs = require 'fs' #fs.stat()
+fs = require 'fs' #fs.statSync(), fs.unlinkSync(), fs.existsSync
 
 MOD_PATH = null
 BOI_PATH = "steamapps/common/The Binding of Isaac Rebirth"
@@ -72,6 +75,27 @@ rebuild = (docDir, modDir) ->
 docPath = ->
     path.join(atom.config.get('Atom-boilua.isaacPath'), 'tools/LuaDocs')
 
+# deletes the annoying 'update.it' file that marks mods as out of date,
+# which breaks the flow of developpement.
+deleteUpdateIt = (event) ->
+    mod_path = atom.config.get('Atom-boilua.modPath')
+    # Finds recursively the directory of the mod we are working on
+    findModDir = (cur_path) ->
+        if path.dirname(cur_path) == mod_path
+            return cur_path
+        else if path.parse(cur_path).root == cur_path
+            return false # we weren't in the mod dir in the first place...
+        else
+            return findModDir(path.dirname(cur_path))
+    updateit_path = path.join(findModDir(event.path), 'update.it')
+    if updateit_path and fs.existsSync(updateit_path)
+        # double check we are indeed deleting an 'update.it' file,
+        # to make 100% sure we don't fuck up users' file system.
+        if path.basename(updateit_path) == 'update.it'
+            fs.unlinkSync(updateit_path)
+        else
+            console.log('almost deleted ', updateit_path, '!!! close one.')
+    return null
 
 module.exports =
     #config schema
@@ -84,17 +108,29 @@ module.exports =
             circumstances)'''
             default: MOD_PATH
             type: 'string'
+
         isaacPath:
             title: 'Isaac Game folder'
             description: '''This is the path to your Binding of Isaac:Rebirth
             game location. You need to change this if you installed Rebirth
             on a custom location or if Atom is reporting you issues of not
             finding the "documentation pages".
-            \n
+
             The proper path is the location of the isaac executable (the folder
             that Steam calls "Local Files")'''
             default: BOI_PATH
             type: 'string'
+
+        resourcePath:
+            title: 'Isaac resource folder'
+            description: '''The path in which the isaac resources were
+            extracted to, using the ResourceExtractor tool.
+
+            This is used to setup default files when you create a mod with
+            templates.'''
+            default: path.join(BOI_PATH, 'resources')
+            type: 'string'
+
         pythonPath:
             title: 'Python path'
             description: '''The path to your Python executable, if you are on
@@ -111,26 +147,34 @@ module.exports =
         @subscriptions = new CompositeDisposable
         @subscriptions.add atom.commands.add 'atom-workspace',
             'Atom-boilua:force-rebuild' : => @force_rebuild()
+        @subscriptions.add atom.commands.add 'atom-workspace',
+            'Atom-boilua:open-mod-creator' : => @open_modgen()
         atom.workspace.observeTextEditors @verify_path
+        null
+
+    open_modgen: () ->
+        createModgenPane()
         null
 
     force_rebuild: ->
         rebuild(docPath(), atom.config.get('Atom-boilua.modPath'))
         null
 
-    #verify if we are in the modding directory
+    getOptionProvider: () ->
+        return new AbpModdingSnippets()
+
+    # verify if we are in the modding directory, if so, we check the API doc
+    # updateness and we setup automatic deletion of the update.it file
     verify_path: (editor) ->
         cur_path = editor.getPath()
         if cur_path != undefined
             cur_path = path.resolve(cur_path)
             modPath = atom.config.get('Atom-boilua.modPath')
             if cur_path.startsWith(modPath)
+                editor.onDidSave(deleteUpdateIt)
                 if verify_docupdate(docPath(), modPath)
                     console.log modPath + '/.luacompleterc needs an update'
                     rebuild(docPath(), modPath)
         else
             console.log cur_path + ' is undefined...'
         null
-
-    getOptionProvider: () ->
-        return new AbpModdingSnippets()

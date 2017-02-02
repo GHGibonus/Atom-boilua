@@ -1,12 +1,16 @@
-
-
-# modgen adds a command letting you access the modgen panel which will
-# helps isaac modders starting up creating a new mod quickly by generating
-# automatically the skeleton (file structure) of a new mod.
-
-# It also should let you automatically create templates for the commonly
-# used xml files, and put them in the directory you want.
+ModgenModel = require './modgenModel'
+ModgenView = require './modgenView'
 
 module.exports =
-    modgenCmd: ->
-        someStuff()
+    toggleModgenPane: () ->
+
+    createModgenPane: () ->
+        @model = new ModgenModel()
+        @view = new ModgenView()
+        atom.views.addViewProvider(ModgenModel, (modgen_model) =>
+            view = @view
+            modgen_model.setView(view)
+            return view
+        )
+        active_pane = atom.workspace.addModalPanel({item: @view})
+        null
