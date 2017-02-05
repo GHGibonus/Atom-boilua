@@ -1,7 +1,11 @@
 'context-menu':
-  'atom-text-editor': [
-    {
-      'label': 'Rebuild BoI API'
-      'command': 'Atom-boilua:force-rebuild'
-    }
-  ]
+    'atom-text-editor': [
+        {
+            'label': 'Rebuild BoI API'
+            'command': 'Atom-boilua:force-rebuild'
+        },
+        {
+            'label': 'Create new BoI mod'
+            'command': 'Atom-boilua:open-mod-creator'
+        }
+    ]

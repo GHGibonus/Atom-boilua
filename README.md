@@ -23,13 +23,13 @@ All the code has been refactored to adhere to a more readable standard.
  - Transparent (Runs automatically when an update of the doc or the package is detected).
  - In-editor description of the functions (well, as documented as the API can get)
  - Quality of life features, such as the deletion of the `update.it` file or the addition of very commonly used snippets.
- - Automatic template mod generation with an UI!
+ - Automatic template mod generation with an UI! (right click and select 'Create new BoI mod' or search `open mod creator` in the command palette)
 
-![Quick Bloat Exemple](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/ressources/spawnmanybloats.gif)
+![Documentation scraping functionality](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/resources/demo_doc.png)
 
-![Documentation Exemple](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/ressources/documentation_exem.png)
+![Mod template creation functionality](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/resources/demo_mod_creation.png)
 
-![Type Exemple](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/ressources/type_inference_exem.png)
+![Smart typing & documentation link](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/resources/demo_newmod.png)
 
 
 ## **Installation**
@@ -80,7 +80,6 @@ Here is what you can find in the settings tab:
 | Isaac AB+ mod editing folder | The directory in which you edit your mods, by default, it is the Afterbirth+ mod folder. |
 | Isaac Game folder            | The directory in which Rebirth is installed, if you use a custom Steam location, this must be changed.
 | Python path                  | The Python executable path, Windows users must specify it |
-| Isaac resource folder        | The path to the Isaac uncompressed assets (using the resource unpacker). This is used to generate default templates that uses gfx files |
 
 ## **Inner Workings**
 The package creates a .luacompleterc file in your `binding of isaac afterbirth+ mod` folder, which the autocomplete-lua package will use to provide you with proper mod API suggestions.
