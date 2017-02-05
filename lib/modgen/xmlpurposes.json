@@ -1,16 +1,23 @@
 {
   "players": {
-    "needsContentGFX": true,
+    "contentsGfx": [
+      "gfx/charactermenu.anm2",
+      "gfx/charactermenu.png",
+      "gfx/characterportraits.anm2",
+      "gfx/death portraits.png",
+      "gfx/death screen.anm2"
+    ],
     "requires": [
       "players.xml",
       "costumes2.xml"
     ],
     "resourceFolders": [
-      "gfx/characters"
+      "gfx/characters/costumes",
+      "sfx/player"
     ]
   },
+
   "items": {
-    "needsContentGFX": false,
     "requires": [
       "itempools.xml",
       "items.xml",
@@ -21,28 +28,35 @@
       "gfx/characters/costumes"
     ]
   },
+
   "challenges": {
-    "needsContentGFX": false,
     "requires": [
       "challenges.xml"
     ]
   },
+
   "entities": {
-    "needsContentGFX": false,
     "requires": [
       "entities2.xml"
     ],
     "resourceFolders": [
-
+      "gfx/monsters"
     ]
   },
+
   "pillcards": {
-
+    "contentsGfx": [
+      "gfx/ui_cardfronts.anm2",
+      "gfx/ui_cardfronts.png"
+    ],
+    "requires": [
+      "pocketitems.xml"
+    ]
   },
+
   "curses": {
-
-  },
-  "floors": {
-
+    "requires": [
+      "curses.xml"
+    ]
   }
 }

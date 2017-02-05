@@ -1,0 +1,16 @@
+<!--
+ - Put a `name` field so the game recognizes for which item it should give
+   the player a costum. If you leave it empty, several items might give you
+   the same costume.
+ - the `priority`  field controls on which costum layer the costum is applied
+   for exemple, priority="1" would put the costum behind isaac's head, and
+   priority="99" would put the costum in front of all other costums
+-->
+<costumes anm2root="gfx/">
+<costume
+    name="Your item's name"
+	anm2path="path to your custom animation in gfx.anm2"
+	priority="99"
+    type="passive"
+/>
+</costumes>

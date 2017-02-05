@@ -1,0 +1,95 @@
+
+/*
+ * Stylesheet for the mod creator menu, taken mostly from
+ * atom/settings-view, to have a consistent look.
+ *
+ * https://github.com/atom/settings-view
+ *
+ */
+
+@import "ui-variables";
+@import "syntax-variables";
+
+/* TODO
+atom-text-editor {
+
+}*/
+
+.boilua-mod-creator {
+    .modgen-title {
+        text-align: center;
+    }
+
+    .modgen-entry {
+        padding-top: 0.4em;
+        padding-bottom: 0.4em;
+    }
+    .modgen-modname {
+        label {
+            padding-right: 0;
+            display: block;
+        }
+        padding-right: 2.25em;
+
+    }
+    .modgen-buttons {
+        display: flex;
+        width: 50%;
+    }
+    .setting-entry {
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        display: flex;
+        flex: 1 1 50%;
+    }
+    .checkbox {
+        padding-left: 2.25em;
+        label {
+            padding-left: 0;
+            display: block;
+        }
+        .setting-title {
+            display: inline-block;
+            font-weight: bold;
+        }
+        .setting-description {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+    }
+    input[type="checkbox"] {
+        margin: 0 .75em 0 -2.25em;
+    }
+
+    .color {
+        padding-left: 5em;
+        .setting-title {
+            margin-top: -2.25em;
+        }
+        .setting-description {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+    }
+    input[type="color"] {
+        float: left;
+        margin: 0 0 0 -5em;
+        padding: 0;
+        width: 4em;
+        height: 1.6em;
+        border-radius: 4px;
+        border: 1px solid @base-border-color;
+        background: darken(@base-background-color, 2%);
+        &::-webkit-color-swatch-wrapper {
+            padding: 2px;
+            margin: 0;
+            border-radius: inherit;
+        }
+        &::-webkit-color-swatch {
+            border-radius: 2px;
+            border: 1px solid hsla(0,0%,0%,.1);
+        }
+    }
+}

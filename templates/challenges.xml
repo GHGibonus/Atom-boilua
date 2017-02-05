@@ -1,0 +1,54 @@
+<!--
+  ** NOTE: this list is taken from the nicalis sample 'fart boy' challenge **
+  ** http://steamcommunity.com/sharedfiles/filedetails/?id=833844561        **
+
+ - `startingitems` comma separated (nospace) list of the item IDs you want
+   the player to start the challenge with.
+ - `startingtrinkets` same as above, but for trinkets (max two possible)
+ - `startingpill` effect id of the starting pill (-1 for no pill | default)
+ - `startingcard` card id of the starting card (can include runes)
+   -1 for random tarot card, 0 for no card | default
+ - `playertype` which character the challenge must be played as.
+   this takes the player type ID of the character
+ - `endstage` is where the challenge should end. Be careful, it doesn't
+   necessarly corresponds to the numbers shown in the 'stage' command
+   in the Afterbirth+ console, check the `stages.xml` file in resource
+   folder.
+ - `roomfilter` list of room ids to not be generated in challenge
+   (Not all room ids can be used) The room ids are as following:
+     NORMAL - 1, Shop - 2, Error - 3, Treasure - 4, Boss - 5, Miniboss - 6,
+     Secret - 7, SuperSecret - 8, Arcade - 9, Curse - 10, Challenge - 11,
+     Library - 12, Sacrifice - 13, Devil - 14, Angel - 15, Dungeon - 16,
+     Bossrush - 17, Isaacs - 18, Barren - 19, Chest - 20, Dice - 21,
+     BlackMarket - 22
+ - `cursefilter` bitmask for curses to be removed
+   The curse ids are as following:
+     Darkness = 1, Labyrinth = 2, Lost = 4, Unknown = 8, Cursed = 16
+   In order to get the proper bitmask for several curses, you add them up.
+   Let's say you don't want curses Darkness or Unknown, you would put:
+     `cursefilter="9"` (where 9 = 1 + 8)
+ - `getcurse` bitmask for curses to be forced (Same id's as curse filter)
+ - `achievements` list of achievement ids that are required
+   to be able to play the challenge
+ - `altpath` alternative floor for light/dark path (isaac/satan)
+ - `canshoot` false gives the player a blindfold for the challenge
+ - `redhp`: add red hp; `maxhp`: add hp container; `soulhp`: add soul hearts;
+   `blackhp`: add black hp
+ - `coins` starting coin count
+ - `maxdamage` maximal damage or more (clamps at min 100)
+ - `adddamage` damage to be added to base state (like in pong)
+ - `minfirerate` minimal fire rate or more
+ - `minshotspeed` minimal shot speed or less
+ - `bigrange` big range????
+ - `difficulty` game difficulty (0 - normal | default, 1 - hard)
+ - `megasatan` last boss is megasatan
+-->
+<challenges version="1">
+<challenge name="Your challenge's name"
+    id="1"
+    startingitems="511,101"
+    endstage="10"
+    roomfilter="4"
+    canshoot="false"
+/>
+</challenges>

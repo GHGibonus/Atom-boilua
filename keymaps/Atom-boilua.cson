@@ -1,0 +1,5 @@
+'.platform-linux atom-text-editor':
+    'ctrl-alt-n': 'Atom-boilua:open-mod-creator'
+
+'.boilua-mod-creator':
+    'escape': 'Atom-boilua:close-mod-creator'

@@ -1,0 +1,29 @@
+<!--
+ ** Taken from the nicalis sample mod:
+ ** http://steamcommunity.com/sharedfiles/filedetails/?id=838994644
+-->
+<players root="gfx/characters/costumes/"
+         portraitroot="gfx/ui/boss/"
+         nameimageroot="gfx/ui/boss/"
+         bigportraitroot="gfx/ui/stage/">
+	<player name="The Worst"
+        id="0"
+        skin="Character_00X_Ginger.png"
+        hp="8" bombs="50" costume="7"
+        items="45"
+        nameimage="PlayerName_01_Isaac.png"
+        portrait="PlayerPortrait_01_Isaac.png"
+        bigportrait="PlayerPortraitBig_01_Isaac.png"
+        skinColor="-1"
+    />
+	<player name="Invert"
+        id="1"
+        skin="Custom_Character_Invert.png"
+        hp="8" bombs="50"
+        items="105"
+        nameimage="PlayerName_01_Isaac.png"
+        portrait="PlayerPortrait_01_Isaac.png"
+        bigportrait="PlayerPortraitBig_01_Isaac.png"
+        skinColor="-1"
+    />
+</players>

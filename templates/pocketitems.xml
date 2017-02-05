@@ -1,0 +1,15 @@
+<!--
+ ** Taken from the nicalis sample mod:
+ ** http://steamcommunity.com/sharedfiles/filedetails/?id=838987049
+-->
+<pocketitems>
+	<card name="Slow Them"
+        description="Slow Them All"
+        hud="SlowThem"
+    />
+	<card name="Shrink Them"
+        description="Shrink Them All"
+        hud="ShrinkThem"
+    />
+	<pilleffect name="Bad Ass" />
+</pocketitems>

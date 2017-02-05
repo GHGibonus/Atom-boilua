@@ -1,0 +1,32 @@
+<!--
+ - Add an id field in order to make an entity of the type you want.
+   For exemple, if you wanted to make a new type of bomb, put `id="4"`.
+ - Add a `variant="n"` if you are having issues getting your entity
+   to appear in the game.
+ - Control the speed of your enemy with `friction`.
+   That value is between 0 and 1, values greater than 1 might make
+   your entity accelerate to uncontrolable speeds.
+ - The `portrait` fields control what pictures show when the entity kills the
+   player.
+ - Put the `collisionDamage` value to "0" if you want the entity to be
+   harmless when directly hitting the player.
+-->
+<entities anm2root="gfx/" version="5">
+<entity name="the entity's name"
+    anm2path="animation file name in your gfx in resources folder.anm2"
+    reroll="true"
+    baseHP="10"
+    boss="0"
+    champion="1"
+    collisionDamage="1"
+    collisionMass="30"
+    collisionRadius="13"
+    friction="1"
+    numGridCollisionPoints="7"
+    shadowSize="0"
+    stageHP="0"
+    portrait="30"
+    bestiary="false"
+><gibs amount="6" blood="1" bone="0" eye="0" gut="1" large="0" />
+</entity>
+</entities>

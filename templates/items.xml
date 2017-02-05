@@ -1,0 +1,53 @@
+<!--
+ Note: there is several type of items, the type is the name of the
+ entry (<passive.../> defines a passive type item).
+ - Those are: passive, active, familiar and trinket
+
+ - use the fields `bombs`, `coins` and `keys` to control how many
+   consumables your item gives when you pick it up. For exemple
+   `bombs="10" keys="10"` gives the player 10 keys and 10 bombs when
+   the item is picked up.
+
+ Note: all heart counts are calculated in half hearts.
+ - `maxhearts` is the number of heart containers to add.
+ - `hearts` is count of red hearts to add, it won't exceed the amount of
+   heart containers the player have.
+ - `soulhearts` is the number of spirit hearts to add.
+ - `blackhearts` the number of black hearts to add.
+
+ Note: Red Candle has a `maxcharges` value of 110
+ - For active items `maxcharges` control the number of charges the item have
+   A value of `maxcharge="0"` means infinite charges.
+
+ - `cooldown` is the number of frames you want the player to freez after
+   using the item
+
+ Note on making stat modifying items: the mod needs to have a
+ MC_EVALUATE_CACHE callback in main.lua in order to catch the
+ modification and apply the actual stat changes.
+ - `cache` are the flags to set when calling functions callbacks to
+   MC_EVALUATE_CACHE. They are a space separated list of stat names,
+   the possible values are as following:
+     `speed`, `range`, `shotspeed`, `damage`, `tearcolor`, `tearflag`,
+     `firedelay`, `luck`, `flying` and `all`
+   All the flags might not work, but some work. If you want to call
+   MC_EVALUATE_CACHE with the damage, luck and speed flags, put
+   `cache="damage luck speed"` in your item xml definiton.
+
+ - `special` if you want your item to be special, because it's special
+   a special item has special set to `special="true"`
+
+ - `devilprice` the number of red heart containers your item should cost in
+   a devil room (`devilprice="1"` or `devilprice="2"`)
+-->
+<items gfxroot="gfx/" version="1">
+<passive name="a passive item name"
+    description="flavor text shows when you pick up the item"
+    gfx="item's sprite in gfx.png"
+/>
+<active name="an ative item name"
+	description="flavor text shows when you pick up the item"
+	gfx="itemsprite.png"
+	maxcharges="0"
+/>
+</items>

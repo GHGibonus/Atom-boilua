@@ -1,0 +1,38 @@
+<!--
+Note: imagine that each item adds a number of tokens to the item pool.
+Each time the game must generate an item pedestal, it takes out a random
+token from the item pool and puts the item on the pedestal.
+
+ - `weight` the number of tokens to put in the pool for your item. Greater
+   values makes your item more likely to show up.
+
+ - `decreaseby` Number of tokens to remove from the pool when
+   the player **sees** the item. Greater numbers means you are
+   less likely to see the item after having seen it once.
+
+ - `removeon` Minimum number of tokens to accept the item in the pool.
+   If your item has less token remaining than the `removeon` value,
+   the player won't see it anymore, even if there is remaining tokens.
+
+ - Note that item weights might be pool dependent.
+
+ - Note that picking up the item will remove it from all the pools it is in.
+
+ - All values can be natural or rational numbers.
+-->
+<ItemPools>
+<Pool name="treasure">
+	<Item name="Your item name"
+        weight="2"
+        removeon="0.1"
+        decreaseby="1"
+    />
+</Pool>
+<Pool name="angel">
+	<Item name="Your item name"
+        weight="2"
+        removeon="0.1"
+        decreaseby="1"
+    />
+</Pool>
+</ItemPools>
