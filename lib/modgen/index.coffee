@@ -19,7 +19,7 @@ module.exports =
         cur_path = atom.workspace.getActiveTextEditor()?.getPath()
         purposeFile = path.join(boiluaLoc(), 'lib/modgen/xmlpurposes.json')
         data = JSON.parse(fs.readFileSync(purposeFile))
-        cur_mod_name = if cur_path?\
+        cur_mod_name = if cur_path? and cur_path.startsWith(isaacmodLoc())\
             then path.basename(findModDir(cur_path, mod_path))
             else ''
         index_locals.model = \
