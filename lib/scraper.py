@@ -390,10 +390,14 @@ def categorizeFiles(docPath: str) \
         """Returns True if name matches a class description file."""
         return re.fullmatch(r'class_[0-9A-Za-z_]*(?!-members.html)\.html',
                             name) is not None
+    def isNamespaceFile(name: str) -> bool:
+        """Filter for namespace descripting files."""
+        return re.fullmatch(r'namespace_[\w]+\.html', name) is not None
     return (
         [pth.join(curDir, curFile) for curFile, curDir in allDocFiles(docPath)
                                    if isClassFile(curFile)],
-        [pth.join(docPath, 'namespace_isaac.html')],
+        [pth.join(curDir, curFile) for curFile, curDir in allDocFiles(docPath)
+                                   if isNamespaceFile(curFile)],
         [pth.join(docPath, 'group___enumerations.html')],
         [pth.join(docPath, 'group___functions.html')] )
 
