@@ -49,7 +49,7 @@ verify_docupdate = (docDir, modDir) ->
 rebuild = (docDir, modDir) ->
     command = atom.config.get('Atom-boilua.pythonPath')
     args = [
-        path.join(boiluaLoc(), 'lib/main.py'),
+        path.join(boiluaLoc(), 'lib/scraper/main.py'),
         docDir,
         path.join(modDir, '.luacompleterc')
     ]
