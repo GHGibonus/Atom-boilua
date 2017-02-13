@@ -176,7 +176,7 @@ module.exports =
         editor.onDidChangePath(() -> verify_path(editor))
         editor.onDidSave(() ->
             # editor inside the mod folder
-            if editor.getPath()?.startsWith(isaacmodLoc())
+            if fs.realpathSync(editor.getPath())?.startsWith(isaacmodLoc())
                 deleteUpdateIt(path: editor.getPath())
         )
         null
@@ -204,8 +204,8 @@ module.exports =
     # updateness
     verify_path: (editor) ->
         cur_path = editor.getPath()
-        if cur_path != undefined
-            cur_path = path.resolve(cur_path)
+        if cur_path != undefined and fs.existsSync(cur_path)
+            cur_path = fs.realpathSync(cur_path)
             modPath = isaacmodLoc()
             if cur_path.startsWith(modPath)
                 if verify_docupdate(docPath(), modPath)

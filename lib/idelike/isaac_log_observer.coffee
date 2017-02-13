@@ -25,7 +25,7 @@ runtimeErrorsPattern =\
 callWhenSaved = (fileToWatch, callback) ->
     atom.workspace.observeTextEditors((editor) ->
         dispose = editor.onDidSave(() ->
-            curPath = editor.getPath()
+            curPath = fs.realpathSync(editor.getPath())
             if curPath == fileToWatch
                 callback()
                 dispose.dispose()
