@@ -1,5 +1,10 @@
+'.platform-win32 atom-text-editor':
+    'ctrl-alt-n': 'Atom-boilua:open-mod-creator'
+    'f6': 'Atom-boilua:launch-game'
+
 '.platform-linux atom-text-editor':
     'ctrl-alt-n': 'Atom-boilua:open-mod-creator'
+    'f6': 'Atom-boilua:launch-game'
 
 '.boilua-mod-creator':
     'escape': 'Atom-boilua:close-mod-creator'

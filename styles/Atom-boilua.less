@@ -1,3 +1,23 @@
+@import "ui-variables";
+@import "syntax-variables";
+
+/*
+ * Stylesheet for the error highlight ide-like feature.
+ *
+ */
+
+
+.error-highlighted-line {
+    animation: blinker 0.5s cubic-bezier(.4, 0, 1, 1) infinite;
+}
+
+@keyframes blinker {
+    from {
+        background-color: rgba(100, 40, 40, 0.1);
+    } to {
+        background-color: rgba(100, 40, 40, 0.9);
+    }
+}
 
 /*
  * Stylesheet for the mod creator menu, taken mostly from
@@ -6,14 +26,6 @@
  * https://github.com/atom/settings-view
  *
  */
-
-@import "ui-variables";
-@import "syntax-variables";
-
-/* TODO
-atom-text-editor {
-
-}*/
 
 .boilua-mod-creator {
     .modgen-title {
@@ -60,36 +72,5 @@ atom-text-editor {
     }
     input[type="checkbox"] {
         margin: 0 .75em 0 -2.25em;
-    }
-
-    .color {
-        padding-left: 5em;
-        .setting-title {
-            margin-top: -2.25em;
-        }
-        .setting-description {
-            display: flex;
-            flex-wrap: wrap;
-            width: 100%;
-        }
-    }
-    input[type="color"] {
-        float: left;
-        margin: 0 0 0 -5em;
-        padding: 0;
-        width: 4em;
-        height: 1.6em;
-        border-radius: 4px;
-        border: 1px solid @base-border-color;
-        background: darken(@base-background-color, 2%);
-        &::-webkit-color-swatch-wrapper {
-            padding: 2px;
-            margin: 0;
-            border-radius: inherit;
-        }
-        &::-webkit-color-swatch {
-            border-radius: 2px;
-            border: 1px solid hsla(0,0%,0%,.1);
-        }
     }
 }

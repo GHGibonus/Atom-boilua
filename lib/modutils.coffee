@@ -85,8 +85,12 @@ module.exports =
 
     # Convenience function, returns the path to the Atom-boilua package
     boiluaLoc: () ->
-        return atom.packages.resolvePackagePath('Atom-boilua')
+        return path.normalize(atom.packages.resolvePackagePath('Atom-boilua'))
 
     # Convenience function, returns the path to the isaac mod folder
     isaacmodLoc: () ->
-        return atom.config.get('Atom-boilua.modPath')
+        return path.normalize(atom.config.get('Atom-boilua.modPath'))
+
+    # Returns the file open in the current text buffer
+    currentFile: () ->
+        return path.normalize(atom.workspace.getActiveTextEditor().getPath())

@@ -5,9 +5,10 @@ An Atom package to improve your Binding of Isaac modding experience.
 
 
 ## **Contents**
-- [Description](#description)
-- [Installation](#installation)
-- [Patch notes](#Patch notes)
+- [Description](#Description)
+- [Installation](#Installation)
+- [Patch notes](#Patch)
+- [Suggesting improvements](#Suggesting)
 - [License](#license)
 
 
@@ -24,6 +25,7 @@ All the code has been refactored to adhere to a more readable standard.
  - In-editor description of the functions (well, as documented as the API can get)
  - Quality of life features, such as the deletion of the `update.it` file or the addition of very commonly used snippets.
  - Automatic template mod generation with an UI! (right click and select 'Create new BoI mod' or search `open mod creator` in the command palette)
+ - IDE-like features, such as an hotkey to launch the game, in addition to customizable extra commands. When an error is found in the log file when running the game, it will also automatically focus Atom and highlight the line where the error occured.
 
 ![Documentation scraping functionality](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/resources/demo_doc.png)
 
@@ -77,7 +79,7 @@ Here is what you can find in the settings tab:
 
 | Setting                      | Description                         |
 | ---------------------------- | ----------------------------------- |
-| Isaac AB+ mod editing folder | The directory in which you edit your mods, by default, it is the Afterbirth+ mod folder. |
+| Isaac AB+ mod editing folder | The directory in which you edit your mods, by default, it is the Afterbirth+ mod folder. Note that setting this to something different than your mod folder might cause issues with the log reading feature.|
 | Isaac Game folder            | The directory in which Rebirth is installed, if you use a custom Steam location, this must be changed.
 | Python path                  | The Python executable path, Windows users must specify it |
 
@@ -92,8 +94,10 @@ If the package successfully create the luacompleterc file, it will notify you wi
 
 
 ## **Patch notes**
-
 See the patch notes on Github: https://github.com/GHGibonus/Atom-boilua/releases
+
+## **Suggesting improvements**
+All improvement suggestions goes on the issue tracker: https://github.com/GHGibonus/Atom-boilua/issues
 
 ## **License**
 See [**LICENSE.md**](LICENSE.md) for more information.
