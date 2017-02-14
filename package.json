@@ -2,7 +2,7 @@
   "name": "Atom-boilua",
   "main": "./lib/main.coffee",
   "version": "1.3.1",
-  "description": "Provides autocompletion for the BoI:AB+ lua modding API",
+  "description": "Provides autocompletion for the BoI:AB+ lua modding API and much more!",
   "repository": "https://github.com/GHGibonus/Atom-boilua.git",
   "bugs": {
     "url": "https://github.com/GHGibonus/Atom-boilua/issues"
@@ -21,9 +21,6 @@
         "2.0.0": "getOptionProvider"
       }
     }
-  },
-  "devDependencies": {
-    "babel-eslint": "^7.0.0"
   },
   "dependencies": {
     "atom-space-pen-views": "^2.1.1"

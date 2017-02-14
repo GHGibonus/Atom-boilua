@@ -5,11 +5,11 @@ An Atom package to improve your Binding of Isaac modding experience.
 
 
 ## **Contents**
-- [Description](#Description)
-- [Installation](#Installation)
-- [Patch notes](#Patch)
-- [Suggesting improvements](#Suggesting)
-- [Licenses](#Licenses)
+- [Description](#description)
+- [Installation](#installation)
+- [Patch notes](#patch-notes)
+- [Suggesting improvements](#suggesting-improvements)
+- [Licenses](#licenses)
 
 
 ## **Description**
@@ -88,6 +88,8 @@ See the patch notes on Github: https://github.com/GHGibonus/Atom-boilua/releases
 
 ## **Suggesting improvements**
 All improvement suggestions goes on the issue tracker: https://github.com/GHGibonus/Atom-boilua/issues
+
+If you want to work yourself on new feature, check the guidelines on the wiki https://github.com/GHGibonus/Atom-boilua/wiki/Contributing
 
 ## **Licenses**
 This package has several components under several different licenses. First off, **at the exception of contrary notice**, the code is licensed under the MIT (Expat) license.

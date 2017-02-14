@@ -1,6 +1,6 @@
 {CompositeDisposable, BufferedProcess} = require 'atom'
 
-AbpModdingSnippets = require './provider'
+provider = require './provider'
 
 {launch_isaac} = require './idelike'
 {createModgenPane, removeModgenPane} = require './modgen'
@@ -16,7 +16,7 @@ BOI_PATH = "steamapps/common/The Binding of Isaac Rebirth"
 if os.platform() == "win32"
     MOD_PATH = "Documents/My Games/Binding of Isaac Afterbirth+ Mods"
     BOI_PATH = path.join("C:/Program Files/Steam", BOI_PATH)
-    BOI_CMD = "C:/Program Files/Steam/steam.exe -applaunch %250900"
+    BOI_CMD = "C:/Program\\ Files/Steam/steam.exe -applaunch %250900"
 else if os.platform() == "darwin"
     MOD_PATH = "Library/Application Support/Binding of Isaac Afterbirth+ Mods"
     BOI_PATH = path.join(os.homedir(), "Library/Application Support/Steam",
@@ -75,7 +75,7 @@ rebuild = (docDir, modDir) ->
     process = new BufferedProcess({command, args, stdout, stderr, exit})
 
 #returns the path to the doc file
-docPath = ->
+docPath = () ->
     path.join(atom.config.get('Atom-boilua.isaacPath'), 'tools/LuaDocs')
 
 # deletes the annoying 'update.it' file that marks mods as out of date,
@@ -90,7 +90,6 @@ deleteUpdateIt = (event) ->
             fs.unlinkSync(updateit_path)
         else
             console.log('almost deleted ', updateit_path, '!!! close one.')
-    return null
 
 module.exports =
     #config schema
@@ -103,6 +102,7 @@ module.exports =
             circumstances)'''
             default: MOD_PATH
             type: 'string'
+            order: 2
 
         isaacPath:
             title: 'Isaac Game folder'
@@ -115,6 +115,7 @@ module.exports =
             that Steam calls "Local Files")'''
             default: BOI_PATH
             type: 'string'
+            order: 1
         # This is not used. Planned™ feature.
         # resourcePath:
         #     title: 'Isaac resource folder'
@@ -133,12 +134,16 @@ module.exports =
             Remember that your Python version must be 3.5 or higher!'''
             default: 'python3'
             type: 'string'
+            order: 5
+
         isaacStartCommand:
             title: 'Isaac launch command'
             description: '''The command to use to launch isaac, the game.
             This might not be avaliable on your plateform.'''
             default: BOI_CMD
             type: 'string'
+            order: 3
+
         additionalCommands:
             title: 'Additional commands'
             description: '''Additional commands to run when you start isaac.
@@ -147,6 +152,7 @@ module.exports =
             spaces.'''
             default: ''
             type: 'string'
+            order: 4
 
     #members
     subscriptions: null
@@ -168,7 +174,6 @@ module.exports =
                 @register_editor_callbacks(editor, @verify_path)
             )
         )
-        null
 
     # Registers functions to call when stuff happen in text editors
     register_editor_callbacks: (editor, verify_path) ->
@@ -179,26 +184,21 @@ module.exports =
             if fs.realpathSync(editor.getPath())?.startsWith(isaacmodLoc())
                 deleteUpdateIt(path: editor.getPath())
         )
-        null
 
     open_modgen: () ->
         createModgenPane()
-        null
 
     close_modgen: () ->
         removeModgenPane()
-        null
 
     force_rebuild: () ->
         rebuild(docPath(), isaacmodLoc())
-        null
 
     launch_isaac: () ->
         launch_isaac()
-        null
 
     getOptionProvider: () ->
-        return new AbpModdingSnippets()
+        return provider
 
     # verify if we are in the modding directory, if so, we check the API doc
     # updateness
