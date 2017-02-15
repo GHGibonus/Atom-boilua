@@ -30,7 +30,8 @@ module.exports = provider =
             edPath = currentFile()
             if edPath.startsWith(modPath)
                 resolve(customSnippets.filter((snippetName) ->
-                    if snippetName.displayText.startsWith(prefix)
+                    if prefix.length != 0 and
+                            snippetName.displayText.startsWith(prefix)
                         snippetName.replacementPrefix = prefix
                         return true
                     else
