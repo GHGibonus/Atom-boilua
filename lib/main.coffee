@@ -16,7 +16,7 @@ BOI_PATH = "steamapps/common/The Binding of Isaac Rebirth"
 if os.platform() == "win32"
     MOD_PATH = "Documents/My Games/Binding of Isaac Afterbirth+ Mods"
     BOI_PATH = path.join("C:/Program Files/Steam", BOI_PATH)
-    BOI_CMD = "C:/Program\\ Files/Steam/steam.exe -applaunch %250900"
+    BOI_CMD = "C:/Program\\ Files/Steam/Steam.exe steam://run/250900"
 else if os.platform() == "darwin"
     MOD_PATH = "Library/Application Support/Binding of Isaac Afterbirth+ Mods"
     BOI_PATH = path.join(os.homedir(), "Library/Application Support/Steam",
@@ -138,8 +138,7 @@ module.exports =
 
         isaacStartCommand:
             title: 'Isaac launch command'
-            description: '''The command to use to launch isaac, the game.
-            This might not be avaliable on your plateform.'''
+            description: '''The command to use to launch isaac, the game.'''
             default: BOI_CMD
             type: 'string'
             order: 3

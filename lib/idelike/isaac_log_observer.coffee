@@ -4,6 +4,7 @@ path = require 'path'
 {isaacmodLoc} = require '../modutils'
 LogObserver = require './log_observer'
 {focusError} = require './isaac_error_handling'
+
 # 1. mod in which the syntax error lies
 # 2. file in which the syntax error lies
 # 3. line where the parser failed
@@ -20,7 +21,6 @@ syntaxErrorsPattern =\
 runtimeErrorsPattern =\
 /^\[INFO\] - \[([\w ]+)\] Error in \"([\w ]+)\" call:.*\+ [mM]ods\/([\w ]+)\/([\w. \/]+):([\d]+):(.*)$/
 
-
 # Calls callback when fileToWatch is saved uppon (but only once)
 callWhenSaved = (fileToWatch, callback) ->
     atom.workspace.observeTextEditors((editor) ->
@@ -31,7 +31,6 @@ callWhenSaved = (fileToWatch, callback) ->
                 dispose.dispose()
         )
     )
-    null
 
 module.exports = class IsaacLogObserver extends LogObserver
     constructor: () ->
@@ -51,7 +50,6 @@ module.exports = class IsaacLogObserver extends LogObserver
         faultyLine = Number(matchArray[3])
         errorMessage = matchArray[4]
         focusError(modFolder, faultyFile, faultyLine, errorMessage)
-        null
 
     # Same as above, but for runtime errors.
     # Additionally, will prevent any more callbacks from being made.
@@ -69,11 +67,11 @@ module.exports = class IsaacLogObserver extends LogObserver
         faultyFile = matchArray[4]
         faultyLine = Number(matchArray[5])
         errorMessage = matchArray[6]
-        fileToWatch = path.join(isaacmodLoc(), modFolder, faultyFile)
         if callback in ['PostUseItem', 'PostUsePill', 'PostUseCard']
             @unmute()
         else
+            fileToWatch = path.join(isaacmodLoc(), modFolder, faultyFile)
             callWhenSaved(fileToWatch, () => window.setTimeout(@unmute, 7000))
+
         focusError(modFolder, faultyFile, faultyLine,
                    'error in callback ' + callback + ': ' + errorMessage)
-        null

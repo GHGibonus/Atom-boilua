@@ -45,7 +45,7 @@
     description="flavor text shows when you pick up the item"
     gfx="item's sprite in gfx.png"
 />
-<active name="an ative item name"
+<active name="an active item name"
 	description="flavor text shows when you pick up the item"
 	gfx="itemsprite.png"
 	maxcharges="0"
