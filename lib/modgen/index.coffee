@@ -7,6 +7,7 @@ ModgenView = require './modgenView'
 # Coordinates actions between model, view and data for modgen
 
 index_locals = {}
+
 removeModgenPane = () ->
     atom.workspace.getActivePane().activate()
     index_locals.my_panel.hide()
@@ -19,7 +20,8 @@ module.exports =
         cur_path = atom.workspace.getActiveTextEditor()?.getPath()
         purposeFile = path.join(boiluaLoc(), 'lib/modgen/xmlpurposes.json')
         data = JSON.parse(fs.readFileSync(purposeFile))
-        cur_mod_name = if cur_path? and cur_path.startsWith(isaacmodLoc())\
+        cur_mod_name = if cur_path?\
+                and fs.realpathSync(cur_path).startsWith(isaacmodLoc())\
             then path.basename(findModDir(cur_path, mod_path))
             else ''
         index_locals.model = \

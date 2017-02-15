@@ -24,7 +24,7 @@
       "costumes2.xml"
     ],
     "resourceFolders": [
-      "gfx/items/collectibles",
+      "gfx/collectibles",
       "gfx/characters/costumes"
     ]
   },

@@ -7,8 +7,9 @@ An Atom package to improve your Binding of Isaac modding experience.
 ## **Contents**
 - [Description](#description)
 - [Installation](#installation)
-- [Patch notes](#Patch notes)
-- [License](#license)
+- [Patch notes](#patch-notes)
+- [Suggesting improvements](#suggesting-improvements)
+- [Licenses](#licenses)
 
 
 ## **Description**
@@ -24,6 +25,7 @@ All the code has been refactored to adhere to a more readable standard.
  - In-editor description of the functions (well, as documented as the API can get)
  - Quality of life features, such as the deletion of the `update.it` file or the addition of very commonly used snippets.
  - Automatic template mod generation with an UI! (right click and select 'Create new BoI mod' or search `open mod creator` in the command palette)
+ - IDE-like features, such as an hotkey to launch the game, in addition to customizable extra commands. When an error is found in the log file when running the game, it will also automatically focus Atom and highlight the line where the error occurred.
 
 ![Documentation scraping functionality](https://raw.githubusercontent.com/GHGibonus/Atom-boilua/master/resources/demo_doc.png)
 
@@ -77,23 +79,21 @@ Here is what you can find in the settings tab:
 
 | Setting                      | Description                         |
 | ---------------------------- | ----------------------------------- |
-| Isaac AB+ mod editing folder | The directory in which you edit your mods, by default, it is the Afterbirth+ mod folder. |
+| Isaac AB+ mod editing folder | The directory in which you edit your mods, by default, it is the Afterbirth+ mod folder. Note that setting this to something different than your mod folder might cause issues with the log reading feature.|
 | Isaac Game folder            | The directory in which Rebirth is installed, if you use a custom Steam location, this must be changed.
 | Python path                  | The Python executable path, Windows users must specify it |
 
-## **Inner Workings**
-The package creates a .luacompleterc file in your `binding of isaac afterbirth+ mod` folder, which the autocomplete-lua package will use to provide you with proper mod API suggestions.
-
-When you open a file in the isaac mod folder, Atom-boilua will check if it needs to create or update a .luacompleterc by comparing the last modification time of the API documentation and the .luacompleterc file.
-
-It will then scrap the necessary informations from the doc and convert them into data readable by the autocomplete-lua package.
-
-If the package successfully create the luacompleterc file, it will notify you with a blue pop-up. If the blue pop-up didn't appear when you expected to, right click on your file and click `Rebuild BoI API` in the context menu. It should then work, or break, if it breaks report the issue.
-
-
 ## **Patch notes**
-
 See the patch notes on Github: https://github.com/GHGibonus/Atom-boilua/releases
 
-## **License**
-See [**LICENSE.md**](LICENSE.md) for more information.
+## **Suggesting improvements**
+All improvement suggestions goes on the issue tracker: https://github.com/GHGibonus/Atom-boilua/issues
+
+If you want to work yourself on new feature, check the guidelines on the wiki https://github.com/GHGibonus/Atom-boilua/wiki/Contributing
+
+## **Licenses**
+This package has several components under several different licenses. First off, **at the exception of contrary notice**, the code is licensed under the MIT (Expat) license.
+
+ - The Python scraper code's license is specified in [SCRAPER_LICENSE](#lib/scraper/SCRAPER_LICENSE)
+ - The template xml files that the user might use in a mod that they distribute on any platform is under an even more permissive license (a derivative of the WTFPL). No restriction is given on redistributing/modifying/selling/claiming as your own (not even including copyright notices). See [TEMPLATES_LICENSE](#templates/TEMPLATES_LICENSE) for more informations.
+ - Every other code in this repository reposes on [LICENSE](#lib/LICENSE). This is an MIT license, the difference with the SCRAPER_LICENSE being the copyright attribution.
