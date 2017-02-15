@@ -39,7 +39,6 @@ module.exports = class IsaacLogObserver extends LogObserver
         super(logFile)
         @addRegexListener(syntaxErrorsPattern, @handleSyntaxErrors)
         @addRegexListener(runtimeErrorsPattern, @handleRuntimeErrors)
-        return this.constructor
 
     # If the user has a file in modName open, does the following:
     # Move cursor to the incrimined line, highlights it, show error message

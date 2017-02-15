@@ -26,7 +26,7 @@ parseCmd = (cmdString) ->
         parsedCmdList[i] = splitCmd
     return parsedCmdList
 
-module.exports = class GameLauncher
+module.exports = class GameHandler
     constructor: () ->
         @subcommands = []
         @runAdditionalCmds()
@@ -54,8 +54,9 @@ module.exports = class GameLauncher
     launchLogReader: () =>
         @logreader = new IsaacLogObserver()
 
-    killGame: () =>
-        @logreader = null
+    killReaders: () =>
+        @logreader.close()
+        @logreader = undefined
         @boiProc.kill()
 
     # called when the process terminates

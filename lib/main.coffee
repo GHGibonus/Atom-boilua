@@ -2,7 +2,7 @@
 
 provider = require './provider'
 
-{launch_isaac} = require './idelike'
+{handle_isaac} = require './idelike'
 {createModgenPane, removeModgenPane} = require './modgen'
 {findModDir, isaacmodLoc, boiluaLoc} = require './modutils'
 
@@ -193,8 +193,10 @@ module.exports =
     force_rebuild: () ->
         rebuild(docPath(), isaacmodLoc())
 
-    launch_isaac: () ->
-        launch_isaac()
+    launch_isaac: () =>
+        if @gameHandler?
+            @gameHandler.killReaders()
+        @gameHandler = handle_isaac()
 
     getOptionProvider: () ->
         return provider

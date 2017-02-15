@@ -1,8 +1,5 @@
-GameLauncher = require './game_launcher'
-
-local = undefined
+GameHandler = require './game_handler'
 
 module.exports =
-    launch_isaac : () ->
-        local = new GameLauncher()
-        null
+    handle_isaac : () ->
+        return new GameHandler()

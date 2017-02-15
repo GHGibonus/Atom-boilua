@@ -1,5 +1,8 @@
 fs = require 'fs'
 
+# NOTE: OMG MAKE SURE TO USE THE .close()
+# METHOD IF YOU WANT TO DELETE AN INSTANCE OF THIS CLASS!!
+# NODE.JS'S FS.WATCH DO NOT FORGET!!!
 module.exports = class LogObserver
     # Opens a listener to the given logFile and setups callbacks.
     constructor: (logFile) ->
@@ -26,7 +29,7 @@ module.exports = class LogObserver
 
     # Close the log's file descriptors
     close: () =>
-        fs.closeSync(@watcher)
+        @watcher.close()
         fs.closeSync(@watched)
 
     # Invoked every time node's fs.watch detects a change on the observed log.
@@ -42,7 +45,7 @@ module.exports = class LogObserver
 
     # Invoked at each new line appened to the file. Calls the callback for
     # successful line matches, ONLY IF the logger is not deef.
-    # NOTE: race conditions in fs.watch might cause unexpected behaviors maybe?
     _onNewLine: (lineContent) =>
-        for pair in @listeners when pair.pattern.test(lineContent) and not @deef
-            pair.callback(pair.pattern.exec(lineContent))
+        for pair in @listeners when pair.pattern.test(lineContent)
+            unless @deef
+                pair.callback(pair.pattern.exec(lineContent))
