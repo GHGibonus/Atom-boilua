@@ -398,7 +398,7 @@ def categorizeFiles(docPath: str) \
                                    if isClassFile(curFile)],
         [pth.join(curDir, curFile) for curFile, curDir in allDocFiles(docPath)
                                    if isNamespaceFile(curFile)],
-        [pth.join(docPath, 'group___enumerations.html')],
+        [pth.join(docPath, 'group__enums.html')],
         [pth.join(docPath, 'group___functions.html')] )
 
 
