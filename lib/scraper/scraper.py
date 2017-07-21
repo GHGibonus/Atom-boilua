@@ -399,7 +399,7 @@ def categorizeFiles(docPath: str) \
         [pth.join(curDir, curFile) for curFile, curDir in allDocFiles(docPath)
                                    if isNamespaceFile(curFile)],
         [pth.join(docPath, 'group__enums.html')],
-        [pth.join(docPath, 'group___functions.html')] )
+        [pth.join(docPath, 'group__funcs.html')] )
 
 
 class AfterbirthApi:
