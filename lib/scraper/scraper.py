@@ -281,7 +281,7 @@ class LuaNamespace:
             try:
                 self.name = RE_NAMESPACE_NAME.search(content).group(1)
             except AttributeError as e: #HACK: global functions are in global
-                if pth.basename(namespacePath) == 'group___functions.html':
+                if pth.basename(namespacePath) == 'group__funcs.html':
                     self.name = '_G'
                 else:
                     raise e
@@ -399,7 +399,7 @@ def categorizeFiles(docPath: str) \
         [pth.join(curDir, curFile) for curFile, curDir in allDocFiles(docPath)
                                    if isNamespaceFile(curFile)],
         [pth.join(docPath, 'group__enums.html')],
-        [pth.join(docPath, 'group___functions.html')] )
+        [pth.join(docPath, 'group__funcs.html')] )
 
 
 class AfterbirthApi:
