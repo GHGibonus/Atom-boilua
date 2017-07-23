@@ -1,7 +1,7 @@
 {
   "name": "Atom-boilua",
   "main": "./lib/main.coffee",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Provides autocompletion for the BoI:AB+ lua modding API and much more!",
   "repository": "https://github.com/GHGibonus/Atom-boilua.git",
   "bugs": {
